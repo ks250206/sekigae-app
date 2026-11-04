@@ -1,4 +1,460 @@
 {
   "title": "Rules",
-  "description": "Combine blocks to build seating rules."
+  "description": "Combine blocks to build your seating rules.",
+  "categories": {
+    "room": "Room",
+    "seat": "Seat",
+    "person": "Person",
+    "global": "Global",
+    "logic": "Logic"
+  },
+  "blocks": {
+    "room": {
+      "only": {
+        "name": "Room only for",
+        "template": "Only <people/> in <rooms/>"
+      },
+      "prefer": {
+        "name": "Prefer in room",
+        "template": "Prefer <people/> in <rooms/>"
+      },
+      "count": {
+        "name": "Head count",
+        "template": "<people/> in <rooms/>: <op/> <value/>"
+      },
+      "exclude": {
+        "name": "Keep out of room",
+        "template": "Keep <people/> out of <rooms/>"
+      },
+      "diversity": {
+        "name": "Mix",
+        "template": "Mix at least <min/> different <attr/> in <rooms/>"
+      },
+      "attrCap": {
+        "name": "Cap per group",
+        "template": "In <rooms/>, at most <max/> people of the same <attr/>"
+      }
+    },
+    "seat": {
+      "only": {
+        "name": "Seats only for",
+        "template": "Only <people/> may sit at <seats/>"
+      },
+      "pin": {
+        "name": "Pre-place",
+        "template": "Pre-place <member/> at <seat/>"
+      },
+      "empty": {
+        "name": "Leave empty",
+        "template": "Leave <seats/> empty"
+      }
+    },
+    "person": {
+      "pin": {
+        "name": "Pin",
+        "template": "Pin <member/> to <target/>"
+      },
+      "avoid": {
+        "name": "Avoid",
+        "template": "Keep <member/> away from <seats/>"
+      }
+    },
+    "pair": {
+      "relation": {
+        "name": "Pair relation",
+        "template": "Seat <a/> and <b/> <relation/> <qualLab/> <qualRole/>"
+      }
+    },
+    "prev": {
+      "different": {
+        "name": "Change from last year",
+        "template": "<people/> get <scope/> than last year"
+      },
+      "same": {
+        "name": "Keep last year's",
+        "template": "<people/> keep <scope/> as last year"
+      }
+    },
+    "group": {
+      "cluster": {
+        "name": "Cluster",
+        "template": "Cluster <people/> by <attr/>"
+      },
+      "spread": {
+        "name": "Spread",
+        "template": "Spread <people/> across rooms by <attr/>"
+      },
+      "mixAdjacent": {
+        "name": "Mix neighbors",
+        "template": "Neighbors among <people/> have different <attr/>"
+      },
+      "buddy": {
+        "name": "Buddy",
+        "template": "Each of <a/> has at least <min/> <b/> from the same lab <scope/>"
+      },
+      "labBalance": {
+        "name": "Lab balance",
+        "template": "Balance each room's lab mix of <people/> to the overall ratio"
+      }
+    },
+    "depth": {
+      "order": {
+        "name": "Depth order",
+        "template": "Among <people/>, the more senior sits <direction/>"
+      }
+    },
+    "logic": {
+      "any": {
+        "name": "Any of",
+        "template": "At least one of the following"
+      },
+      "all": {
+        "name": "All of",
+        "template": "All of the following"
+      },
+      "ifThen": {
+        "name": "If … then",
+        "template": "If … then",
+        "if": "If",
+        "then": "then"
+      }
+    }
+  },
+  "values": {
+    "op": {
+      "gte": "at least",
+      "lte": "at most",
+      "eq": "exactly"
+    },
+    "attr": {
+      "lab": "labs",
+      "role": "roles",
+      "gender": "gender"
+    },
+    "relation": {
+      "sameRoom": "in the same room",
+      "differentRoom": "in different rooms",
+      "adjacent": "next to each other",
+      "notAdjacent": "not next to each other"
+    },
+    "qualLab": {
+      "same": "if in the same lab",
+      "different": "if in different labs"
+    },
+    "qualRole": {
+      "same": "if in the same role",
+      "different": "if in different roles"
+    },
+    "prevDifferentScope": {
+      "room": "a different room",
+      "seat": "a different seat"
+    },
+    "prevSameScope": {
+      "room": "the same room",
+      "seat": "the same seat"
+    },
+    "direction": {
+      "seniorBack": "further back",
+      "seniorFront": "closer to the entrance"
+    },
+    "buddyScope": {
+      "sameRoom": "in the same room",
+      "adjacent": "next to them"
+    },
+    "unset": "Not set"
+  },
+  "units": {
+    "count": "{{n}} people",
+    "countOne": "{{n}} person",
+    "percent": "{{n}}%",
+    "countShort": "ppl",
+    "percentShort": "%"
+  },
+  "placeholders": {
+    "people": "choose people",
+    "member": "choose a person",
+    "seats": "choose seats",
+    "seat": "choose a seat",
+    "target": "choose a seat or room",
+    "rooms": "choose rooms",
+    "qualLab": "+ lab condition",
+    "qualRole": "+ role condition"
+  },
+  "expr": {
+    "and": " and ",
+    "or": " or ",
+    "not": "not {{x}}",
+    "allPeople": "everyone",
+    "allSeats": "all seats",
+    "allRooms": "all rooms",
+    "nobody": "(none selected)",
+    "noSeats": "(none selected)",
+    "listSep": ", ",
+    "more": "+{{n}} more",
+    "moreSeats": "+{{n}} more seats",
+    "deleted": "(deleted)",
+    "depthBack": "back {{n}} of {{rooms}}",
+    "depthFront": "front {{n}} of {{rooms}}",
+    "depthCount": "{{n}} seats",
+    "depthRatio": "{{n}}%",
+    "seatTag": "seats tagged \"{{tags}}\"",
+    "tag": "tagged \"{{tags}}\"",
+    "room": "{{room}}",
+    "seat": "seat {{seat}}",
+    "roomOf": "{{room}} (room)",
+    "childSep": " / ",
+    "listOf": "{{label}}: {{items}}",
+    "ifThen": "If “{{if}}”, then “{{then}}”",
+    "emptyChildren": "(none)"
+  },
+  "leaf": {
+    "role": "Role / year",
+    "roleGroup": "Role group",
+    "lab": "Lab",
+    "gender": "Gender",
+    "tag": "Tag",
+    "members": "Individuals",
+    "rooms": "Rooms",
+    "seats": "Seats",
+    "seatTag": "Seat tag",
+    "depth": "Depth"
+  },
+  "quickPicks": {
+    "label": "Quick picks",
+    "students": "All students",
+    "doctor": "D",
+    "workingDoctor": "WD",
+    "anyDoctor": "D or WD",
+    "master": "Master's",
+    "bachelor": "Undergrad",
+    "staff": "Staff",
+    "postdoc": "PD",
+    "all": "Everyone"
+  },
+  "slot": {
+    "conditions": "Conditions",
+    "individuals": "Individuals",
+    "searchMembers": "Search by name…",
+    "noMembers": "No members on the roster yet",
+    "noMatch": "No matches",
+    "matchCount": "{{n}} matching",
+    "seatCount": "{{n}} seats matching",
+    "zeroMatch": "Nobody matches",
+    "zeroSeats": "No seats match",
+    "preview": "Matches",
+    "previewMore": "+{{n}} more",
+    "tabRooms": "Rooms",
+    "tabPick": "Pick seats",
+    "tabTags": "Tags",
+    "tabDepth": "Depth",
+    "tabBuild": "Build condition",
+    "noRooms": "No rooms yet",
+    "noSeats": "No seats yet",
+    "noTags": "No tagged seats",
+    "pickHint": "Click to select, drag to select an area",
+    "clearSeats": "Clear selection",
+    "depthRoom": "Room",
+    "depthFrom": "From",
+    "back": "From the back",
+    "front": "From the entrance",
+    "depthAmount": "Amount",
+    "byCount": "Seats",
+    "byRatio": "Ratio",
+    "allRoomsHint": "Select nothing for “all rooms”",
+    "targetSeat": "Seat",
+    "targetRoom": "Room",
+    "done": "Done",
+    "clear": "Clear",
+    "count": "Count",
+    "percent": "Percent",
+    "complex": "This condition is too complex (exceeds depth limit)",
+    "resetCondition": "Reset condition",
+    "selectedSeats": "{{n}} seats selected",
+    "noLabs": "No labs",
+    "noMemberTags": "No tags"
+  },
+  "builder": {
+    "addCondition": "Add condition",
+    "addGroup": "Add group",
+    "group": "Group",
+    "ungroup": "Ungroup",
+    "not": "not",
+    "and": "and",
+    "or": "or",
+    "remove": "Remove condition",
+    "attribute": "Attribute",
+    "empty": "No condition (everyone)",
+    "emptySeats": "No condition (all seats)",
+    "summary": "Summary",
+    "pickValues": "Pick values",
+    "zeroWarning": "Nothing matches this condition",
+    "groupLabel": "Group"
+  },
+  "shell": {
+    "hard": "Must",
+    "soft": "Prefer",
+    "strength": "Strength",
+    "weight": "Weight {{n}}",
+    "weightLabel": "Weight",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "drag": "Drag to reorder",
+    "menu": "Rule menu",
+    "duplicate": "Duplicate",
+    "note": "Note",
+    "editNote": "Edit note",
+    "notePlaceholder": "A note about this rule",
+    "delete": "Delete",
+    "copyJson": "Copy JSON",
+    "copied": "Copied",
+    "violations": "{{n}} violations",
+    "softOnly": "This block can only be a preference",
+    "removeChild": "Remove",
+    "moveOut": "Move out",
+    "dropHere": "Drop rules here",
+    "dropCondition": "Drop the condition rule",
+    "dropThen": "Drop the rule to enforce",
+    "childHint": "Strength is set on the parent block",
+    "origin": {
+      "template": "Template",
+      "contextMenu": "From context menu",
+      "preset": "Preset",
+      "user": "Manual"
+    }
+  },
+  "palette": {
+    "title": "Blocks",
+    "blocks": "Blocks",
+    "templates": "Templates",
+    "search": "Search blocks…",
+    "noResults": "Nothing found",
+    "clickToAdd": "Click to add / drag to insert",
+    "add": "Add"
+  },
+  "templates": {
+    "wdKeepSeat": {
+      "name": "Working doctorals keep last year's seat",
+      "description": "Keeps seats of working doctoral students who rarely come in"
+    },
+    "mixLabs3": {
+      "name": "Mix 3+ labs in each room",
+      "description": "Avoids rooms dominated by one lab"
+    },
+    "labCapHalf": {
+      "name": "One lab at most half a room",
+      "description": "No lab occupies more than half of a room"
+    },
+    "noSameLabSameGradeAdjacent": {
+      "name": "Same lab & year not side by side",
+      "description": "Students of the same lab and year don't sit next to each other"
+    },
+    "buddySenior": {
+      "name": "Seniors from the same lab near newcomers",
+      "description": "At least one D / WD / faculty of the same lab in the room of each M1/B4"
+    },
+    "mixAdjacentLab": {
+      "name": "Neighbors from different labs",
+      "description": "Adjacent people belong to different labs"
+    },
+    "facultyRoom": {
+      "name": "Faculty room for faculty only",
+      "description": "Choose the faculty room after adding"
+    },
+    "prevDifferentRoom": {
+      "name": "Different room from last year",
+      "description": "Students (except working doctorals) move to another room"
+    }
+  },
+  "stack": {
+    "empty": "No rules yet",
+    "emptyHint": "Click a block in the palette on the left, or drag it here.",
+    "count": "{{n}} rules",
+    "shown": "Showing {{shown}} of {{total}}",
+    "enableAll": "Enable all",
+    "disableAll": "Disable all",
+    "collapsed": "Compact",
+    "expanded": "Detailed",
+    "noFilterResults": "No rules match the filters",
+    "export": "Export JSON",
+    "import": "Import JSON",
+    "imported": "Imported {{n}} rules",
+    "importFailed": "Could not read the rules"
+  },
+  "filters": {
+    "label": "Filter",
+    "category": "Category",
+    "strength": "Strength",
+    "enabled": "State",
+    "all": "All",
+    "onlyEnabled": "Enabled",
+    "onlyDisabled": "Disabled",
+    "hasViolations": "Has violations",
+    "related": "Related person / room",
+    "relatedMember": "Person: {{name}}",
+    "relatedRoom": "Room: {{name}}",
+    "clear": "Clear filters",
+    "search": "Search people or rooms…",
+    "members": "People",
+    "rooms": "Rooms"
+  },
+  "issues": {
+    "unsetSlot": "Some fields are not set",
+    "noPreviousPlan": "There is no previous year's plan yet (register one on the Seating page)",
+    "emptyLogic": "No rules inside",
+    "ifThenIncomplete": "Put a rule in both “If” and “then”",
+    "tooDeep": "Logic blocks can be nested only 2 levels deep",
+    "percentOver": "Percent must be 100% or less",
+    "softOnly": "This block can only be a preference",
+    "zeroPeople": "Nobody matches",
+    "zeroSeats": "No seats match",
+    "minOverOptions": "More kinds than available options"
+  },
+  "warnings": {
+    "title": "{{n}} warnings",
+    "dangling": "Refers to deleted rooms, seats, people or labs",
+    "danglingCount": "{{n}} broken references",
+    "removeRefs": "Remove references",
+    "deleteRules": "Delete these rules",
+    "contradictions": "{{n}} possible contradictions",
+    "memberTwoPins": "{{name}} is pinned to more than one seat or room",
+    "seatTwoPins": "Seat {{seat}} has more than one person pinned",
+    "sameAndDifferent": "Some people must be both the same as and different from last year",
+    "pairConflict": "The same pair must be both in the same room and in different rooms",
+    "onlyEmpty": "Nobody matches an “only” rule",
+    "onlyDisjoint": "Several “only” rules on the same room or seats don't overlap",
+    "danglingBadge": "Broken reference",
+    "jump": "Go",
+    "fixed": "References removed",
+    "deleted": "Deleted {{n}} rules"
+  },
+  "context": {
+    "added": "Rule added",
+    "open": "Open",
+    "undo": "Undo",
+    "exists": "The same rule already exists",
+    "seatPinMember": "Pin this seat to {{name}}",
+    "seatPinMemberMenu": "Pin a person to this seat",
+    "seatOnlyRole": "This seat only for {{role}}",
+    "seatOnlyRoleMenu": "Restrict this seat by role",
+    "seatEmpty": "Leave this seat empty",
+    "roomOnly": "This room only for {{who}}",
+    "roomOnlyMenu": "Restrict this room",
+    "roomPrefer": "Prefer {{who}} in this room",
+    "roomPreferMenu": "Prefer in this room",
+    "memberPinSeat": "Pin {{name}} to this seat",
+    "memberPinSeatMenu": "Pin to seat",
+    "memberPinRoom": "Pin {{name}} to {{room}}",
+    "memberPinRoomMenu": "Pin to room",
+    "memberSeparate": "Put {{name}} and {{other}} in different rooms",
+    "memberSeparateMenu": "Separate from"
+  },
+  "feasibility": {
+    "ok": "All required rules can be satisfied",
+    "infeasible": "Required rules cannot be satisfied",
+    "checking": "Checking…",
+    "unknown": "Not checked"
+  },
+  "json": {
+    "copied": "Copied rule JSON"
+  }
 }
