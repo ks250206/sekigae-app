@@ -1,11 +1,12 @@
-import { useTranslation } from "react-i18next";
-import { PageHeader } from "@/components/PageHeader";
+import { installRulesDevHooks } from "./devHooks";
+import { RulesEditor } from "./RulesEditor";
 
+installRulesDevHooks();
+
+/**
+ * ③ ルール画面。違反数・実行可能性はエンジン / 席配置側が実装後に
+ * <RulesEditor violationCounts={...} feasibility={...} /> として渡す。
+ */
 export default function RulesPage() {
-  const { t } = useTranslation("rules");
-  return (
-    <div className="flex h-full flex-col">
-      <PageHeader title={t("title")} description={t("description")} />
-    </div>
-  );
+  return <RulesEditor />;
 }

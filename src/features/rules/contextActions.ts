@@ -7,11 +7,12 @@ import type { LucideIcon } from "lucide-react";
 import { Armchair, CircleSlash, DoorClosed, DoorOpen, MapPin, Pin, Split } from "lucide-react";
 import { toast } from "sonner";
 import i18n from "@/i18n";
-import { compareRole, ROLE_QUICK_PICKS } from "@/domain/roles";
-import type { PersonExpr, Rule, RuleBlock, Strength } from "@/domain/rules";
+import { compareRole } from "@/domain/roles";
+import type { Rule, RuleBlock, Strength } from "@/domain/rules";
 import type { ID, Project } from "@/domain/schema";
 import { getProject, useProjectStore } from "@/store/project";
 import { addBlockRule } from "./actions";
+import { QUICK_PICKS } from "./quickPicks";
 import { makeSummaryCtx, summarizeBlock, summarizePeople } from "./summary";
 import { useRulesUi } from "./rulesUi";
 
@@ -107,16 +108,7 @@ export function createContextRule(
 // メニュー項目
 // ---------------------------------------------------------------------------
 
-const QUICK_PEOPLE: { key: string; expr: PersonExpr }[] = [
-  { key: "staff", expr: { op: "roleGroup", in: ["staff"] } },
-  { key: "postdoc", expr: { op: "roleGroup", in: ["postdoc"] } },
-  { key: "doctor", expr: { op: "roleGroup", in: ["doctor"] } },
-  { key: "workingDoctor", expr: { op: "roleGroup", in: ["workingDoctor"] } },
-  { key: "anyDoctor", expr: { op: "roleGroup", in: ["doctor", "workingDoctor"] } },
-  { key: "master", expr: { op: "roleGroup", in: ["master"] } },
-  { key: "bachelor", expr: { op: "roleGroup", in: ["bachelor"] } },
-  { key: "students", expr: { op: "role", in: [...ROLE_QUICK_PICKS.students] } },
-];
+const QUICK_PEOPLE = QUICK_PICKS.filter((q) => q.key !== "all");
 
 function item(
   project: Project,
