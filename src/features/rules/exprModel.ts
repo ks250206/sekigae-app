@@ -63,3 +63,26 @@ export function toExpr<E extends AnyExpr>(m: CondModel<E>): E {
 }
 
 export const sameExpr = (a: AnyExpr, b: AnyExpr) => JSON.stringify(a) === JSON.stringify(b);
+
+export type PersonLeaf = LeafOf<PersonExpr>;
+export type SeatLeaf = LeafOf<SeatExpr>;
+
+export const PERSON_LEAF_OPS = ["role", "roleGroup", "lab", "gender", "tag", "members"] as const;
+export const SEAT_LEAF_OPS = ["rooms", "seats", "seatTag", "depth"] as const;
+
+export function defaultPersonLeaf(op: (typeof PERSON_LEAF_OPS)[number]): PersonLeaf {
+  return op === "members" ? { op, ids: [] } : { op, in: [] };
+}
+
+export function defaultSeatLeaf(op: (typeof SEAT_LEAF_OPS)[number]): SeatLeaf {
+  switch (op) {
+    case "rooms":
+      return { op, roomIds: [] };
+    case "seats":
+      return { op, seatIds: [] };
+    case "seatTag":
+      return { op, in: [] };
+    case "depth":
+      return { op, roomIds: [], from: "back", count: 3 };
+  }
+}
