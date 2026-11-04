@@ -26,7 +26,11 @@ export class ExprCompiler {
   /** 現在コンパイル中のルール（診断の帰属先） */
   ruleId: ID | undefined;
 
-  constructor(readonly ctx: EngineContext) {}
+  readonly ctx: EngineContext;
+
+  constructor(ctx: EngineContext) {
+    this.ctx = ctx;
+  }
 
   dangling(code: DiagnosticCode, id: ID) {
     const key = `${code}|${this.ruleId ?? ""}|${id}`;
@@ -84,7 +88,8 @@ export class ExprCompiler {
   seatsOfRooms(rooms: number[]): Bitset {
     const { ctx } = this;
     const b = bitsetEmpty(ctx.nSeats);
-    for (const r of rooms) for (let s = ctx.roomStart[r]!; s < ctx.roomStart[r + 1]!; s++) bitSet(b, s);
+    for (const r of rooms)
+      for (let s = ctx.roomStart[r]!; s < ctx.roomStart[r + 1]!; s++) bitSet(b, s);
     return b;
   }
 
@@ -120,7 +125,8 @@ export class ExprCompiler {
   private checkPersonRefs(e: PersonExpr) {
     switch (e.op) {
       case "members":
-        for (const id of e.ids) if (!this.ctx.memberIndex.has(id)) this.dangling("danglingMember", id);
+        for (const id of e.ids)
+          if (!this.ctx.memberIndex.has(id)) this.dangling("danglingMember", id);
         return;
       case "lab":
         for (const id of e.in) if (!this.ctx.labIndex.has(id)) this.dangling("danglingLab", id);
@@ -141,10 +147,12 @@ export class ExprCompiler {
     switch (e.op) {
       case "rooms":
       case "depth":
-        for (const id of e.roomIds) if (!this.ctx.roomIndex.has(id)) this.dangling("danglingRoom", id);
+        for (const id of e.roomIds)
+          if (!this.ctx.roomIndex.has(id)) this.dangling("danglingRoom", id);
         return;
       case "seats":
-        for (const id of e.seatIds) if (!this.ctx.seatIndex.has(id)) this.dangling("danglingSeat", id);
+        for (const id of e.seatIds)
+          if (!this.ctx.seatIndex.has(id)) this.dangling("danglingSeat", id);
         return;
       case "and":
       case "or":
@@ -244,13 +252,17 @@ export class ExprCompiler {
       case "depth": {
         // domain/expr.ts の resolveSeats と同じ選び方（UI プレビューと一致させる）
         const b = bitsetEmpty(n);
-        const rooms = e.roomIds.length ? e.roomIds.map((id) => this.room(id)).filter((r) => r >= 0) : null;
+        const rooms = e.roomIds.length
+          ? e.roomIds.map((id) => this.room(id)).filter((r) => r >= 0)
+          : null;
         for (let r = 0; r < ctx.nRooms; r++) {
           if (rooms && !rooms.includes(r)) continue;
           const seats: number[] = [];
           for (let s = ctx.roomStart[r]!; s < ctx.roomStart[r + 1]!; s++) seats.push(s);
           seats.sort((a, c) =>
-            e.from === "back" ? ctx.seatDist[c]! - ctx.seatDist[a]! : ctx.seatDist[a]! - ctx.seatDist[c]!,
+            e.from === "back"
+              ? ctx.seatDist[c]! - ctx.seatDist[a]!
+              : ctx.seatDist[a]! - ctx.seatDist[c]!,
           );
           const k =
             e.count !== undefined
@@ -281,4 +293,3 @@ export function compilePeople(ctx: EngineContext, expr: PersonExpr): Bitset {
 export function compileSeats(ctx: EngineContext, expr: SeatExpr): Bitset {
   return new ExprCompiler(ctx).seats(expr);
 }
-

@@ -3,9 +3,8 @@
  * 座れない場合は Hall の違反集合から構造化された理由（Diagnostic）を作る。
  */
 import type { ID, Project } from "@/domain/schema";
-import { bitsetCount } from "./bitset";
 import { buildContext, type EngineContext } from "./context";
-import { buildDomains, usableSeats, type Domains } from "./domains";
+import { buildDomains, type Domains } from "./domains";
 import { hallViolator, hopcroftKarp, type Matching } from "./matching";
 import { buildModel } from "./model";
 import type { Diagnostic, FeasibilityResult, SolveScope } from "./types";
@@ -31,12 +30,11 @@ export function analyzeFeasibility(ctx: EngineContext, d: Domains): FeasibilityA
   const ok = matching.size === d.free.length;
   if (ok) return { ok, matching, assignable, diagnostics };
 
-  const usable = bitsetCount(usableSeats(ctx, d));
-  if (d.free.length > usable) {
+  if (d.free.length > d.capacity) {
     diagnostics.push({
       code: "notEnoughSeats",
       severity: "error",
-      params: { members: ctx.nMembers, seats: usable + nFixed, totalSeats: ctx.nSeats },
+      params: { members: ctx.nMembers, seats: d.capacity + nFixed, totalSeats: ctx.nSeats },
     });
     return { ok, matching, assignable, diagnostics };
   }
@@ -98,7 +96,10 @@ export function checkFeasibility(
     members: ctx.nMembers,
     seats: ctx.nSeats,
     assignable: a.assignable,
-    diagnostics: [...a.diagnostics, ...dedupeDiagnostics([...model.diagnostics, ...model.compiler.diagnostics])],
+    diagnostics: [
+      ...a.diagnostics,
+      ...dedupeDiagnostics([...model.diagnostics, ...model.compiler.diagnostics]),
+    ],
   };
 }
 

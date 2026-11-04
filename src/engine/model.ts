@@ -10,6 +10,7 @@
  * | `room`   | 部屋        | 動いた席の部屋                               |
  * | `seat`   | 席（隣接辺）| 動いた席とその隣（辺 (s,t) は s<t の s が持つ） |
  * | `pair`   | 人の組      | 動いた人を含む組                             |
+ * | `roomPair` | 同室の deps の組 | 動いた人と同室の人の組（部屋の席を走査） |
  * | `global` | なし        | 全体を再計算                                 |
  *
  * `deps` は値に影響しうるメンバー（それ以外の人が動いても値は変わらない）。
@@ -20,6 +21,7 @@ import { SOFT_ONLY_TYPES, type Attr, type Rule, type RuleBlock } from "@/domain/
 import {
   bitHas,
   bitSet,
+  bitsetCount,
   bitsetEmpty,
   bitsetFrom,
   bitsetNot,
@@ -64,7 +66,7 @@ export interface CulpritSink {
   seats: Set<number>;
 }
 
-export type LeafKind = "member" | "room" | "seat" | "pair" | "global";
+export type LeafKind = "member" | "room" | "seat" | "pair" | "roomPair" | "global";
 
 export interface Leaf {
   kind: LeafKind;
@@ -75,7 +77,7 @@ export interface Leaf {
   part?: (st: State, u: number) => number;
   /** seat: 隣接辺 (s, t) の寄与 */
   edge?: (st: State, s: number, t: number) => number;
-  /** pair: 組の端点と寄与 */
+  /** pair: 組の端点と寄与。roomPair: 同じ部屋にいる deps の 2 人 (x, y) の寄与（pairCost のみ使う） */
   pairA?: Int32Array;
   pairB?: Int32Array;
   pairCost?: (st: State, a: number, b: number) => number;
@@ -156,6 +158,20 @@ export function leafValue(ctx: EngineContext, leaf: Leaf, st: State): number {
       for (let p = 0; p < A.length; p++) v += cost(st, A[p]!, B[p]!);
       return v;
     }
+    case "roomPair": {
+      const cost = leaf.pairCost!;
+      const deps = leaf.deps!;
+      for (let r = 0; r < ctx.nRooms; r++)
+        for (let s = ctx.roomStart[r]!; s < ctx.roomStart[r + 1]!; s++) {
+          const x = st.memberAt[s]!;
+          if (x < 0 || !bitHas(deps, x)) continue;
+          for (let t = s + 1; t < ctx.roomStart[r + 1]!; t++) {
+            const y = st.memberAt[t]!;
+            if (y >= 0 && bitHas(deps, y)) v += cost(st, x, y);
+          }
+        }
+      return v;
+    }
     case "global":
       return v + leaf.full!(st);
   }
@@ -230,13 +246,35 @@ export function leafCulprits(ctx: EngineContext, leaf: Leaf, st: State, out: Cul
         }
       return;
     }
+    case "roomPair": {
+      const deps = leaf.deps!;
+      for (let r = 0; r < ctx.nRooms; r++)
+        for (let s = ctx.roomStart[r]!; s < ctx.roomStart[r + 1]!; s++) {
+          const x = st.memberAt[s]!;
+          if (x < 0 || !bitHas(deps, x)) continue;
+          for (let t = s + 1; t < ctx.roomStart[r + 1]!; t++) {
+            const y = st.memberAt[t]!;
+            if (y >= 0 && bitHas(deps, y) && leaf.pairCost!(st, x, y) > 0) {
+              addSeat(st, s, out);
+              addSeat(st, t, out);
+            }
+          }
+        }
+      return;
+    }
     case "global":
       return;
   }
 }
 
 /** ノードの違反当事者を集める（any は最小の子、ifThen は帰結のみ） */
-export function nodeCulprits(model: Model, node: Node, st: State, leafVal: ArrayLike<number>, out: CulpritSink) {
+export function nodeCulprits(
+  model: Model,
+  node: Node,
+  st: State,
+  leafVal: ArrayLike<number>,
+  out: CulpritSink,
+) {
   switch (node.k) {
     case "zero":
       return;
@@ -244,7 +282,8 @@ export function nodeCulprits(model: Model, node: Node, st: State, leafVal: Array
       if (leafVal[node.id]! > 0) leafCulprits(model.ctx, model.leaves[node.id]!, st, out);
       return;
     case "sum":
-      for (const c of node.children) if (nodeValue(c, leafVal) > 0) nodeCulprits(model, c, st, leafVal, out);
+      for (const c of node.children)
+        if (nodeValue(c, leafVal) > 0) nodeCulprits(model, c, st, leafVal, out);
       return;
     case "min": {
       let best: Node | null = null;
@@ -318,8 +357,10 @@ class Builder {
   readonly leaves: Leaf[] = [];
   readonly diagnostics: Diagnostic[] = [];
   readonly ctx: EngineContext;
+  readonly c: ExprCompiler;
 
-  constructor(readonly c: ExprCompiler) {
+  constructor(c: ExprCompiler) {
+    this.c = c;
     this.ctx = c.ctx;
   }
 
@@ -441,7 +482,10 @@ class Builder {
         return this.pairRelation(b);
       case "prev.same":
       case "prev.different": {
-        if (!ctx.hasPrevious && !this.diagnostics.some((d) => d.code === "noPreviousPlan" && d.ruleId === ruleId))
+        if (
+          !ctx.hasPrevious &&
+          !this.diagnostics.some((d) => d.code === "noPreviousPlan" && d.ruleId === ruleId)
+        )
           this.diagnostics.push({
             code: "noPreviousPlan",
             severity: "warning",
@@ -524,7 +568,11 @@ class Builder {
    * room.count: 部屋ごとに P の人数 c と目標 t（count = value、percent = value% × 部屋の在室人数）を比較。
    * 違反 = Σ_部屋 不足人数（gte: ⌈t⌉−c）/ 超過人数（lte: c−⌊t⌋）/ ずれ（eq: |c−round(t)|）
    */
-  private roomCount(b: Extract<RuleBlock, { type: "room.count" }>, P: Bitset, rooms: number[]): Node {
+  private roomCount(
+    b: Extract<RuleBlock, { type: "room.count" }>,
+    P: Bitset,
+    rooms: number[],
+  ): Node {
     const { ctx } = this;
     const inR = roomMask(ctx, rooms);
     const eps = 1e-9;
@@ -889,52 +937,31 @@ class Builder {
   }
 
   /**
-   * depth.order: 部屋ごとに、rank の異なる P の 2 人で奥行きの順序が逆転している組の数を
-   * (部屋内の対象人数 − 1) で割ったもの（1 人が端から端まで逆にいると約 1）。
-   * 役職「その他」(rank 0) は対象外。
+   * depth.order: 同じ部屋にいる rank の異なる P の 2 人で、奥行きの順序が逆転している組の数を
+   * 正規化したもの。正規化 = max(1, ⌈対象人数 / 席のある部屋数⌉ − 1)（≒ 1 部屋の人数 − 1。
+   * 1 人が端から端まで逆にいると約 1）。役職「その他」(rank 0) は対象外。
    */
   private depthOrder(P: Bitset, direction: "seniorBack" | "seniorFront"): Node {
     const { ctx } = this;
     const deps = bitsetEmpty(ctx.nMembers);
     for (const m of bitsetToArray(P)) if (ctx.memberRank[m]! > 0) bitSet(deps, m);
     const sign = direction === "seniorBack" ? 1 : -1;
-    const maxRoom = Math.max(1, ...Array.from({ length: ctx.nRooms }, (_, r) => ctx.roomStart[r + 1]! - ctx.roomStart[r]!));
-    const rk = new Float64Array(maxRoom);
-    const dp = new Float64Array(maxRoom);
-    const sx = new Int32Array(maxRoom);
-    const collect = (st: State, r: number) => {
-      let k = 0;
-      for (let s = ctx.roomStart[r]!; s < ctx.roomStart[r + 1]!; s++) {
-        const m = st.memberAt[s]!;
-        if (m < 0 || !bitHas(deps, m)) continue;
-        rk[k] = ctx.memberRank[m]!;
-        dp[k] = sign * ctx.seatDist[s]!;
-        sx[k] = s;
-        k++;
-      }
-      return k;
-    };
-    const inverted = (i: number, j: number) =>
-      (rk[i]! > rk[j]! && dp[i]! < dp[j]!) || (rk[j]! > rk[i]! && dp[j]! < dp[i]!);
+    let roomsWithSeats = 0;
+    for (let r = 0; r < ctx.nRooms; r++)
+      if (ctx.roomStart[r + 1]! > ctx.roomStart[r]!) roomsWithSeats++;
+    const norm = Math.max(1, Math.ceil(bitsetCount(deps) / Math.max(1, roomsWithSeats)) - 1);
+    const unit = 1 / norm;
     return this.leaf({
-      kind: "room",
+      kind: "roomPair",
       deps,
       offset: 0,
-      part: (st, r) => {
-        const k = collect(st, r);
-        if (k < 2) return 0;
-        let inv = 0;
-        for (let i = 0; i < k; i++) for (let j = i + 1; j < k; j++) if (inverted(i, j)) inv++;
-        return inv / (k - 1);
-      },
-      roomCulprits: (st, r, out) => {
-        const k = collect(st, r);
-        for (let i = 0; i < k; i++)
-          for (let j = i + 1; j < k; j++)
-            if (inverted(i, j)) {
-              addSeat(st, sx[i]!, out);
-              addSeat(st, sx[j]!, out);
-            }
+      pairCost: (st, x, y) => {
+        const rx = ctx.memberRank[x]!;
+        const ry = ctx.memberRank[y]!;
+        if (rx === ry) return 0;
+        const dx = sign * ctx.seatDist[st.seatOf[x]!]!;
+        const dy = sign * ctx.seatDist[st.seatOf[y]!]!;
+        return (rx > ry && dx < dy) || (ry > rx && dy < dx) ? unit : 0;
       },
     });
   }
@@ -959,53 +986,78 @@ class Builder {
   /**
    * group.buddy: A の各メンバーについて、同じ部屋（または隣）にいる同じ研究室の B（本人以外）が
    * min 人未満なら 1。未配置の A は違反、研究室の無い A は対象外。違反 = 該当する A の人数。
+   * sameRoom は「部屋ごと（配置済み）+ 未配置の A」の 2 つの葉に分けて差分評価する。
    */
   private buddy(A: Bitset, B: Bitset, scope: "sameRoom" | "adjacent", min: number): Node {
     const { ctx } = this;
     const nl = ctx.labIds.length;
-    const nr = ctx.nRooms;
     const as = bitsetToArray(A).filter((m) => ctx.memberLab[m]! >= 0);
     const bs = bitsetToArray(B).filter((m) => ctx.memberLab[m]! >= 0);
     const deps = bitsetFrom(ctx.nMembers, [...as, ...bs]);
-    const cnt = new Int32Array(Math.max(1, nl * nr));
+    const inA = bitsetFrom(ctx.nMembers, as);
+    const unassigned = this.leaf({
+      kind: "member",
+      deps: inA,
+      offset: 0,
+      part: (st, m) => (bitHas(inA, m) && st.seatOf[m]! < 0 ? 1 : 0),
+    });
+    if (scope === "sameRoom") {
+      const cnt = new Int32Array(Math.max(1, nl));
+      const fill = (st: State, r: number) => {
+        cnt.fill(0);
+        for (let s = ctx.roomStart[r]!; s < ctx.roomStart[r + 1]!; s++) {
+          const m = st.memberAt[s]!;
+          if (m >= 0 && bitHas(B, m) && ctx.memberLab[m]! >= 0) cnt[ctx.memberLab[m]!]!++;
+        }
+      };
+      const lackingAt = (st: State, s: number): boolean => {
+        const a = st.memberAt[s]!;
+        if (a < 0 || !bitHas(inA, a)) return false;
+        return cnt[ctx.memberLab[a]!]! - (bitHas(B, a) ? 1 : 0) < min;
+      };
+      const rooms = this.leaf({
+        kind: "room",
+        deps,
+        offset: 0,
+        part: (st, r) => {
+          fill(st, r);
+          let v = 0;
+          for (let s = ctx.roomStart[r]!; s < ctx.roomStart[r + 1]!; s++) if (lackingAt(st, s)) v++;
+          return v;
+        },
+        roomCulprits: (st, r, out) => {
+          fill(st, r);
+          for (let s = ctx.roomStart[r]!; s < ctx.roomStart[r + 1]!; s++)
+            if (lackingAt(st, s)) addSeat(st, s, out);
+        },
+      });
+      return { k: "sum", children: [rooms, unassigned] };
+    }
     const lacking = (st: State, a: number): boolean => {
       const s = st.seatOf[a]!;
-      if (s < 0) return true;
+      if (s < 0) return false;
       const lab = ctx.memberLab[a]!;
       let k = 0;
-      if (scope === "sameRoom") {
-        k = cnt[lab * nr + ctx.seatRoom[s]!]! - (bitHas(B, a) ? 1 : 0);
-      } else {
-        for (let i = ctx.adjStart[s]!; i < ctx.adjStart[s + 1]!; i++) {
-          const b = st.memberAt[ctx.adjList[i]!]!;
-          if (b >= 0 && bitHas(B, b) && ctx.memberLab[b] === lab) k++;
-        }
+      for (let i = ctx.adjStart[s]!; i < ctx.adjStart[s + 1]!; i++) {
+        const b = st.memberAt[ctx.adjList[i]!]!;
+        if (b >= 0 && bitHas(B, b) && ctx.memberLab[b] === lab) k++;
       }
       return k < min;
     };
-    const fill = (st: State) => {
-      if (scope !== "sameRoom") return;
-      cnt.fill(0);
-      for (const b of bs) {
-        const s = st.seatOf[b]!;
-        if (s >= 0) cnt[ctx.memberLab[b]! * nr + ctx.seatRoom[s]!]!++;
-      }
-    };
-    return this.leaf({
+    const adjacent = this.leaf({
       kind: "global",
       deps,
       offset: 0,
       full: (st) => {
-        fill(st);
         let v = 0;
         for (const a of as) if (lacking(st, a)) v++;
         return v;
       },
       culprits: (st, out) => {
-        fill(st);
         for (const a of as) if (lacking(st, a)) addMember(st, a, out);
       },
     });
+    return { k: "sum", children: [adjacent, unassigned] };
   }
 
   /**
@@ -1047,7 +1099,11 @@ class Builder {
         const n = fill(st, r);
         for (let s = ctx.roomStart[r]!; s < ctx.roomStart[r + 1]!; s++) {
           const m = st.memberAt[s]!;
-          if (m >= 0 && bitHas(deps, m) && cnt[ctx.memberLab[m]!]! > n * ratio[ctx.memberLab[m]!]! + 0.5)
+          if (
+            m >= 0 &&
+            bitHas(deps, m) &&
+            cnt[ctx.memberLab[m]!]! > n * ratio[ctx.memberLab[m]!]! + 0.5
+          )
             addSeat(st, s, out);
         }
       },
@@ -1105,7 +1161,11 @@ export interface PresetTermInput {
  * コンテキストの有効ルール（とプリセット項）から評価モデルを作る。
  * soft 専用ブロックを hard 指定した場合は soft（weight）として扱い、診断を出す。
  */
-export function buildModel(ctx: EngineContext, presets: PresetTermInput[] = [], rules: Rule[] = ctx.rules): Model {
+export function buildModel(
+  ctx: EngineContext,
+  presets: PresetTermInput[] = [],
+  rules: Rule[] = ctx.rules,
+): Model {
   const compiler = new ExprCompiler(ctx);
   const b = new Builder(compiler);
   const terms: Term[] = [];
@@ -1138,7 +1198,13 @@ export function buildModel(ctx: EngineContext, presets: PresetTermInput[] = [], 
     if (p.id === "nameOrder") children.push(b.nameOrder());
     if (children.length === 0) continue;
     const node: Node = children.length === 1 ? children[0]! : { k: "sum", children };
-    terms.push({ presetId: p.id, hard: false, weight: p.weight, node, leaves: collectLeaves(node) });
+    terms.push({
+      presetId: p.id,
+      hard: false,
+      weight: p.weight,
+      node,
+      leaves: collectLeaves(node),
+    });
   }
   return {
     ctx,
@@ -1151,7 +1217,9 @@ export function buildModel(ctx: EngineContext, presets: PresetTermInput[] = [], 
 
 /** 単一ブロックだけのモデル（evaluate() 用） */
 export function buildBlockModel(ctx: EngineContext, block: RuleBlock): Model {
-  return buildModel(ctx, [], [
-    { id: "__block__", enabled: true, strength: "soft", weight: 1, block },
-  ]);
+  return buildModel(
+    ctx,
+    [],
+    [{ id: "__block__", enabled: true, strength: "soft", weight: 1, block }],
+  );
 }

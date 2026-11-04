@@ -82,7 +82,8 @@ export function initialState(ctx: EngineContext, d: Domains, rng: Rng, improve =
   };
   if (improve) {
     const cur = new Int32Array(ctx.nMembers).fill(-1);
-    for (let s = 0; s < ctx.nSeats; s++) if (ctx.planMemberAt[s]! >= 0) cur[ctx.planMemberAt[s]!] = s;
+    for (let s = 0; s < ctx.nSeats; s++)
+      if (ctx.planMemberAt[s]! >= 0) cur[ctx.planMemberAt[s]!] = s;
     for (const i of order) {
       const m = d.free[i]!;
       const s = cur[m]!;
@@ -130,7 +131,7 @@ export function initialState(ctx: EngineContext, d: Domains, rng: Rng, improve =
 
 /** 反復回数の既定値（再配置対象の人数に比例） */
 export function defaultIterations(movable: number): number {
-  return Math.min(600_000, 30_000 + 4_000 * movable);
+  return Math.min(400_000, 20_000 + 1_200 * movable);
 }
 
 export interface SolveHooks {
@@ -158,10 +159,10 @@ export class Annealer {
   private startedAt: number;
   private timeLimit: number;
 
-  constructor(
-    readonly prep: Prepared,
-    input: SolveInput,
-  ) {
+  readonly prep: Prepared;
+
+  constructor(prep: Prepared, input: SolveInput) {
+    this.prep = prep;
     const opts = input.options ?? {};
     this.seed = (opts.seed ?? randomSeed()) >>> 0;
     this.rng = createRng(this.seed);
@@ -170,7 +171,10 @@ export class Annealer {
     const st = initialState(ctx, d, this.rng, improve);
     this.ev = new IncrementalEvaluator(model, st);
     this.movable = d.free.filter((m) => d.lists[m]!.length > (st.seatOf[m]! >= 0 ? 1 : 0));
-    this.iterations = Math.max(1, Math.floor(opts.iterations ?? defaultIterations(this.movable.length)));
+    this.iterations = Math.max(
+      1,
+      Math.floor(opts.iterations ?? defaultIterations(this.movable.length)),
+    );
     this.timeLimit = opts.timeLimitMs ?? DEFAULT_TIME_LIMIT_MS;
     this.best = { seatOf: st.seatOf.slice(), memberAt: st.memberAt.slice() };
     this.bestScore = this.ev.score;
@@ -183,20 +187,25 @@ export class Annealer {
   }
 
   /** ランダムな手を 1 つ選ぶ（不正なら -1） */
-  private pick(): { a: number; s: number } | null {
+  /** pick() が選んだ移動先の席 */
+  private pickSeat = -1;
+
+  /** ランダムな手を 1 つ選ぶ（動かす人を返し、移動先は pickSeat。不正なら -1） */
+  private pick(): number {
     const { st } = this.ev;
     const d = this.prep.domains;
     const a = this.movable[this.rng.int(this.movable.length)]!;
     const list = d.lists[a]!;
     const s = list[this.rng.int(list.length)]!;
     const sa = st.seatOf[a]!;
-    if (s === sa) return null;
+    if (s === sa) return -1;
     const b = st.memberAt[s]!;
     if (b >= 0) {
-      if (d.fixed[b]! >= 0) return null;
-      if (sa >= 0 && !bitHas(d.allowed[b]!, sa)) return null;
+      if (d.fixed[b]! >= 0) return -1;
+      if (sa >= 0 && !bitHas(d.allowed[b]!, sa)) return -1;
     }
-    return { a, s };
+    this.pickSeat = s;
+    return a;
   }
 
   /** 初期温度: ランダムな手の soft 差分の平均の 2 倍 */
@@ -205,9 +214,9 @@ export class Annealer {
     let sum = 0;
     let n = 0;
     for (let i = 0; i < 200; i++) {
-      const mv = this.pick();
-      if (!mv) continue;
-      const delta = Math.abs(this.ev.propose(mv.a, mv.s));
+      const a = this.pick();
+      if (a < 0) continue;
+      const delta = Math.abs(this.ev.propose(a, this.pickSeat));
       this.ev.reject();
       if (delta > 0 && delta < HARD_WEIGHT / 2) {
         sum += delta;
@@ -240,8 +249,10 @@ export class Annealer {
     const { ev } = this;
     const lnRatio = Math.log(this.t1 / this.t0);
     const end = Math.min(this.iterations, this.iter + budget);
+    let temp = this.t0 * Math.exp((lnRatio * this.iter) / this.iterations);
     while (this.iter < end) {
       if ((this.iter & 255) === 0) {
+        temp = this.t0 * Math.exp((lnRatio * this.iter) / this.iterations);
         if (shouldStop?.()) {
           this.stoppedBy = "cancelled";
           return true;
@@ -251,11 +262,10 @@ export class Annealer {
           return true;
         }
       }
-      const temp = this.t0 * Math.exp((lnRatio * this.iter) / this.iterations);
       this.iter++;
-      const mv = this.pick();
-      if (!mv) continue;
-      const delta = ev.propose(mv.a, mv.s);
+      const a = this.pick();
+      if (a < 0) continue;
+      const delta = ev.propose(a, this.pickSeat);
       if (delta <= 0 || this.rng.next() < Math.exp(-delta / temp)) {
         ev.accept();
         this.accepted++;
@@ -290,7 +300,8 @@ export class Annealer {
       const m = st.memberAt[s]!;
       if (m >= 0) assignment[ctx.seatIds[s]!] = ctx.memberIds[m]!;
     }
-    for (let m = 0; m < ctx.nMembers; m++) if (st.seatOf[m]! < 0) unassigned.push(ctx.memberIds[m]!);
+    for (let m = 0; m < ctx.nMembers; m++)
+      if (st.seatOf[m]! < 0) unassigned.push(ctx.memberIds[m]!);
     return {
       assignment,
       seed: this.seed,

@@ -38,19 +38,36 @@ export class IncrementalEvaluator {
   private seatStamp: Int32Array;
   private pairStamp: Int32Array;
   private epoch = 0;
-  private touchedLeaves: number[] = [];
-  private oldLeafVal: number[] = [];
-  private touchedTerms: number[] = [];
-  private oldTermVal: number[] = [];
-  private seatUnits: number[] = [];
+  private touchedLeaves: Int32Array;
+  private nTouched = 0;
+  private oldLeafVal: Float64Array;
+  private before: Float64Array;
+  /** room / seat 葉の単位ごとの寄与のキャッシュ */
+  private unitCache: (Float64Array | null)[];
+  private logLeaf: Int32Array;
+  private logUnit: Int32Array;
+  private logVal: Float64Array;
+  private nLog = 0;
+  private touchedTerms: Int32Array;
+  private oldTermVal: Float64Array;
+  private nTerms = 0;
+  private seatUnits: Int32Array;
+  private nSeatUnits = 0;
   private oldScore = 0;
   private oldHard = 0;
-  private move = { a: -1, b: -1, sa: -1, sb: -1 };
+  private a = -1;
+  private b = -1;
+  private sa = -1;
+  private sb = -1;
+  private ra = -1;
+  private rb = -1;
 
-  constructor(
-    readonly model: Model,
-    readonly st: State,
-  ) {
+  readonly model: Model;
+  readonly st: State;
+
+  constructor(model: Model, st: State) {
+    this.model = model;
+    this.st = st;
     const { ctx, leaves, terms } = model;
     this.ctx = ctx;
     this.leafVal = new Float64Array(leaves.length);
@@ -65,10 +82,12 @@ export class IncrementalEvaluator {
     const lists: number[][] = Array.from({ length: ctx.nMembers }, () => []);
     leaves.forEach((leaf, li) => {
       if (lt[li]!.length === 0) return;
-      for (let m = 0; m < ctx.nMembers; m++) if (!leaf.deps || bitHas(leaf.deps, m)) lists[m]!.push(li);
+      for (let m = 0; m < ctx.nMembers; m++)
+        if (!leaf.deps || bitHas(leaf.deps, m)) lists[m]!.push(li);
     });
     this.memLeafStart = new Int32Array(ctx.nMembers + 1);
-    for (let m = 0; m < ctx.nMembers; m++) this.memLeafStart[m + 1] = this.memLeafStart[m]! + lists[m]!.length;
+    for (let m = 0; m < ctx.nMembers; m++)
+      this.memLeafStart[m + 1] = this.memLeafStart[m]! + lists[m]!.length;
     this.memLeafList = Int32Array.from(lists.flat());
 
     this.leafStamp = new Int32Array(leaves.length);
@@ -76,13 +95,40 @@ export class IncrementalEvaluator {
     this.seatStamp = new Int32Array(ctx.nSeats);
     const maxPairs = Math.max(0, ...leaves.map((l) => l.pairA?.length ?? 0));
     this.pairStamp = new Int32Array(maxPairs);
+    this.oldLeafVal = new Float64Array(leaves.length);
+    this.touchedLeaves = new Int32Array(leaves.length);
+    this.touchedTerms = new Int32Array(terms.length);
+    this.oldTermVal = new Float64Array(terms.length);
+    const maxLog = leaves.length * (ctx.nSeats + 2);
+    this.logLeaf = new Int32Array(maxLog);
+    this.logUnit = new Int32Array(maxLog);
+    this.logVal = new Float64Array(maxLog);
+    this.before = new Float64Array(leaves.length);
+    this.seatUnits = new Int32Array(ctx.nSeats);
+    this.unitCache = leaves.map((l) =>
+      l.kind === "room"
+        ? new Float64Array(ctx.nRooms)
+        : l.kind === "seat"
+          ? new Float64Array(ctx.nSeats)
+          : null,
+    );
     this.recompute();
   }
 
   /** 全体を再計算（誤差の蓄積をリセット） */
   recompute(): void {
-    const { model, st } = this;
-    model.leaves.forEach((leaf, i) => (this.leafVal[i] = leafValue(this.ctx, leaf, st)));
+    const { model, st, ctx } = this;
+    model.leaves.forEach((leaf, i) => {
+      const cache = this.unitCache[i];
+      if (cache) {
+        let v = leaf.offset;
+        for (let u = 0; u < cache.length; u++) {
+          cache[u] = this.unitPart(leaf, u);
+          v += cache[u]!;
+        }
+        this.leafVal[i] = v;
+      } else this.leafVal[i] = leafValue(ctx, leaf, st);
+    });
     this.score = 0;
     this.hard = 0;
     model.terms.forEach((t, i) => {
@@ -93,29 +139,25 @@ export class IncrementalEvaluator {
     });
   }
 
+  /** room / seat 単位の寄与 */
+  private unitPart(leaf: Leaf, u: number): number {
+    if (leaf.kind === "room") return leaf.part!(this.st, u);
+    const { ctx, st } = this;
+    const edge = leaf.edge!;
+    let v = 0;
+    for (let i = ctx.adjStart[u]!; i < ctx.adjStart[u + 1]!; i++) {
+      const t = ctx.adjList[i]!;
+      if (t > u) v += edge(st, u, t);
+    }
+    return v;
+  }
+
+  /** member / pair / global の局所和（キャッシュなし） */
   private localSum(leaf: Leaf): number {
-    const { st, ctx } = this;
-    const { a, b, sa, sb } = this.move;
+    const { st, a, b } = this;
     switch (leaf.kind) {
       case "member":
         return leaf.part!(st, a) + (b >= 0 ? leaf.part!(st, b) : 0);
-      case "room": {
-        const ra = sa >= 0 ? ctx.seatRoom[sa]! : -1;
-        const rb = ctx.seatRoom[sb]!;
-        let v = leaf.part!(st, rb);
-        if (ra >= 0 && ra !== rb) v += leaf.part!(st, ra);
-        return v;
-      }
-      case "seat": {
-        const edge = leaf.edge!;
-        let v = 0;
-        for (const s of this.seatUnits)
-          for (let i = ctx.adjStart[s]!; i < ctx.adjStart[s + 1]!; i++) {
-            const t = ctx.adjList[i]!;
-            if (t > s) v += edge(st, s, t);
-          }
-        return v;
-      }
       case "pair": {
         const A = leaf.pairA!;
         const B = leaf.pairB!;
@@ -137,8 +179,93 @@ export class IncrementalEvaluator {
           }
         return v;
       }
+      case "roomPair":
+        return this.roomPairSum(leaf, a, -1) + (b >= 0 ? this.roomPairSum(leaf, b, a) : 0);
       case "global":
         return leaf.full!(st);
+      default:
+        return 0;
+    }
+  }
+
+  /** x と同室の deps の人との組の寄与の和（skip は除く） */
+  private roomPairSum(leaf: Leaf, x: number, skip: number): number {
+    const { st, ctx } = this;
+    const deps = leaf.deps!;
+    if (!bitHas(deps, x)) return 0;
+    const s = st.seatOf[x]!;
+    if (s < 0) return 0;
+    const r = ctx.seatRoom[s]!;
+    const cost = leaf.pairCost!;
+    let v = 0;
+    for (let t = ctx.roomStart[r]!; t < ctx.roomStart[r + 1]!; t++) {
+      const y = st.memberAt[t]!;
+      if (y < 0 || y === x || y === skip || !bitHas(deps, y)) continue;
+      v += cost(st, x, y);
+    }
+    return v;
+  }
+
+  /** キャッシュ済み単位の和（移動前） */
+  private cachedSum(leaf: Leaf, cache: Float64Array): number {
+    if (leaf.kind === "room") {
+      let v = cache[this.rb]!;
+      if (this.ra >= 0 && this.ra !== this.rb) v += cache[this.ra]!;
+      return v;
+    }
+    let v = 0;
+    const units = this.seatUnits;
+    for (let i = 0; i < this.nSeatUnits; i++) v += cache[units[i]!]!;
+    return v;
+  }
+
+  private updateUnit(li: number, leaf: Leaf, cache: Float64Array, u: number): number {
+    const nv = this.unitPart(leaf, u);
+    const k = this.nLog++;
+    this.logLeaf[k] = li;
+    this.logUnit[k] = u;
+    this.logVal[k] = cache[u]!;
+    cache[u] = nv;
+    return nv;
+  }
+
+  /** キャッシュ済み単位を再計算して書き込み（移動後）、和を返す */
+  private refreshUnits(li: number, leaf: Leaf, cache: Float64Array): number {
+    if (leaf.kind === "room") {
+      let v = this.updateUnit(li, leaf, cache, this.rb);
+      if (this.ra >= 0 && this.ra !== this.rb) v += this.updateUnit(li, leaf, cache, this.ra);
+      return v;
+    }
+    let v = 0;
+    for (let i = 0; i < this.nSeatUnits; i++)
+      v += this.updateUnit(li, leaf, cache, this.seatUnits[i]!);
+    return v;
+  }
+
+  private addLeaves(m: number, epoch: number) {
+    const touched = this.touchedLeaves;
+    for (let i = this.memLeafStart[m]!; i < this.memLeafStart[m + 1]!; i++) {
+      const l = this.memLeafList[i]!;
+      if (this.leafStamp[l] !== epoch) {
+        this.leafStamp[l] = epoch;
+        touched[this.nTouched++] = l;
+      }
+    }
+  }
+
+  private addSeatUnit(s: number, epoch: number) {
+    if (s < 0) return;
+    const { ctx } = this;
+    if (this.seatStamp[s] !== epoch) {
+      this.seatStamp[s] = epoch;
+      this.seatUnits[this.nSeatUnits++] = s;
+    }
+    for (let i = ctx.adjStart[s]!; i < ctx.adjStart[s + 1]!; i++) {
+      const t = ctx.adjList[i]!;
+      if (this.seatStamp[t] !== epoch) {
+        this.seatStamp[t] = epoch;
+        this.seatUnits[this.nSeatUnits++] = t;
+      }
     }
   }
 
@@ -160,91 +287,76 @@ export class IncrementalEvaluator {
     const { st, ctx, model } = this;
     const sa = st.seatOf[a]!;
     const b = st.memberAt[sb]!;
-    this.move.a = a;
-    this.move.b = b;
-    this.move.sa = sa;
-    this.move.sb = sb;
+    this.a = a;
+    this.b = b;
+    this.sa = sa;
+    this.sb = sb;
+    this.ra = sa >= 0 ? ctx.seatRoom[sa]! : -1;
+    this.rb = ctx.seatRoom[sb]!;
     this.oldScore = this.score;
     this.oldHard = this.hard;
+    this.nLog = 0;
+    this.nTerms = 0;
+    this.nTouched = 0;
 
     // 影響する葉
     const touched = this.touchedLeaves;
-    touched.length = 0;
     const le = ++this.epoch;
-    const addLeaves = (m: number) => {
-      for (let i = this.memLeafStart[m]!; i < this.memLeafStart[m + 1]!; i++) {
-        const l = this.memLeafList[i]!;
-        if (this.leafStamp[l] !== le) {
-          this.leafStamp[l] = le;
-          touched.push(l);
-        }
-      }
-    };
-    addLeaves(a);
-    if (b >= 0) addLeaves(b);
-    if (touched.length === 0) {
+    this.addLeaves(a, le);
+    if (b >= 0) this.addLeaves(b, le);
+    if (this.nTouched === 0) {
       this.apply(a, b, sa, sb);
-      this.touchedTerms.length = 0;
       return 0;
     }
 
     // 隣接単位（動いた席とその隣）
-    const units = this.seatUnits;
-    units.length = 0;
+    this.nSeatUnits = 0;
     const se = ++this.epoch;
-    const addSeatUnit = (s: number) => {
-      if (s < 0) return;
-      if (this.seatStamp[s] !== se) {
-        this.seatStamp[s] = se;
-        units.push(s);
-      }
-      for (let i = ctx.adjStart[s]!; i < ctx.adjStart[s + 1]!; i++) {
-        const t = ctx.adjList[i]!;
-        if (this.seatStamp[t] !== se) {
-          this.seatStamp[t] = se;
-          units.push(t);
-        }
-      }
-    };
-    addSeatUnit(sa);
-    addSeatUnit(sb);
+    this.addSeatUnit(sa, se);
+    this.addSeatUnit(sb, se);
 
     const old = this.oldLeafVal;
-    old.length = touched.length;
-    const before: number[] = [];
-    for (let i = 0; i < touched.length; i++) {
+    const before = this.before;
+    const n = this.nTouched;
+    for (let i = 0; i < n; i++) {
       const l = touched[i]!;
       old[i] = this.leafVal[l]!;
-      before.push(this.localSum(model.leaves[l]!));
+      const cache = this.unitCache[l];
+      const leaf = model.leaves[l]!;
+      before[i] = cache ? this.cachedSum(leaf, cache) : this.localSum(leaf);
     }
     this.apply(a, b, sa, sb);
-    for (let i = 0; i < touched.length; i++) {
+    for (let i = 0; i < n; i++) {
       const l = touched[i]!;
-      this.leafVal[l] = old[i]! + this.localSum(model.leaves[l]!) - before[i]!;
+      const cache = this.unitCache[l];
+      const leaf = model.leaves[l]!;
+      const after = cache ? this.refreshUnits(l, leaf, cache) : this.localSum(leaf);
+      this.leafVal[l] = old[i]! + after - before[i]!;
     }
 
     // 影響する項
     const tt = this.touchedTerms;
     const ot = this.oldTermVal;
-    tt.length = 0;
-    ot.length = 0;
     const te = ++this.epoch;
     let delta = 0;
-    for (const l of touched)
-      for (const ti of this.leafTerms[l]!) {
+    for (let i = 0; i < n; i++) {
+      const lts = this.leafTerms[touched[i]!]!;
+      for (let j = 0; j < lts.length; j++) {
+        const ti = lts[j]!;
         if (this.termStamp[ti] === te) continue;
         this.termStamp[ti] = te;
         const t = model.terms[ti]!;
         const prev = this.termVal[ti]!;
         const next = nodeValue(t.node, this.leafVal);
-        tt.push(ti);
-        ot.push(prev);
+        tt[this.nTerms] = ti;
+        ot[this.nTerms++] = prev;
         if (next !== prev) {
           this.termVal[ti] = next;
           delta += t.weight * (next - prev);
           if (t.hard) this.hard += next - prev;
         }
       }
+    }
     this.score += delta;
     return delta;
   }
@@ -254,9 +366,8 @@ export class IncrementalEvaluator {
   }
 
   reject(): void {
-    const { a, b, sa, sb } = this.move;
+    const { a, b, sa, sb, st } = this;
     // 逆操作: a を sa へ、b を sb へ
-    const { st } = this;
     if (sa >= 0) {
       st.seatOf[a] = sa;
       st.memberAt[sa] = a;
@@ -265,17 +376,23 @@ export class IncrementalEvaluator {
       st.seatOf[b] = sb;
       st.memberAt[sb] = b;
     } else st.memberAt[sb] = -1;
-    for (let i = 0; i < this.touchedLeaves.length; i++)
+    for (let i = this.nLog - 1; i >= 0; i--)
+      this.unitCache[this.logLeaf[i]!]![this.logUnit[i]!] = this.logVal[i]!;
+    for (let i = 0; i < this.nTouched; i++)
       this.leafVal[this.touchedLeaves[i]!] = this.oldLeafVal[i]!;
-    for (let i = 0; i < this.touchedTerms.length; i++)
-      this.termVal[this.touchedTerms[i]!] = this.oldTermVal[i]!;
+    for (let i = 0; i < this.nTerms; i++) this.termVal[this.touchedTerms[i]!] = this.oldTermVal[i]!;
     this.score = this.oldScore;
     this.hard = this.oldHard;
   }
 }
 
 /** 違反を ID ベースの公開形式にする */
-export function reportViolations(model: Model, st: State, leafVal: ArrayLike<number>, termVal: ArrayLike<number>): Violation[] {
+export function reportViolations(
+  model: Model,
+  st: State,
+  leafVal: ArrayLike<number>,
+  termVal: ArrayLike<number>,
+): Violation[] {
   const { ctx } = model;
   return model.terms.map((t, i) => {
     const v = termVal[i]!;
@@ -299,7 +416,10 @@ export function reportViolations(model: Model, st: State, leafVal: ArrayLike<num
 export const round = (x: number) => Math.round(x * 1e6) / 1e6;
 
 /** 状態を全評価して公開形式の違反一覧（違反 0 も含む）を返す */
-export function evaluateModel(model: Model, st: State): { breakdown: Violation[]; score: number; hard: number } {
+export function evaluateModel(
+  model: Model,
+  st: State,
+): { breakdown: Violation[]; score: number; hard: number } {
   const ev = new IncrementalEvaluator(model, st);
   return {
     breakdown: reportViolations(model, st, ev.leafVal, ev.termVal),
@@ -307,4 +427,3 @@ export function evaluateModel(model: Model, st: State): { breakdown: Violation[]
     hard: round(ev.hard),
   };
 }
-

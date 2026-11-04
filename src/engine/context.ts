@@ -271,6 +271,7 @@ export function buildContext(
 
 /** 2 席が隣接しているか */
 export function isAdjacent(ctx: EngineContext, s: number, t: number): boolean {
-  for (let i = ctx.adjStart[s]!; i < ctx.adjStart[s + 1]!; i++) if (ctx.adjList[i] === t) return true;
+  for (let i = ctx.adjStart[s]!; i < ctx.adjStart[s + 1]!; i++)
+    if (ctx.adjList[i] === t) return true;
   return false;
 }

@@ -10,6 +10,7 @@ import type { Rule } from "@/domain/rules";
 import {
   bitHas,
   bitSet,
+  bitsetAnd,
   bitsetAndInPlace,
   bitsetCount,
   bitsetDiffInPlace,
@@ -35,6 +36,8 @@ export interface Domains {
   restrictedBy: string[][];
   /** 固定・凍結されて再配置対象が使えない席の数 */
   blockedSeats: number;
+  /** 再配置対象が使える席数（固定・凍結・seat.empty を除く。個人ごとの制限は考慮しない） */
+  capacity: number;
 }
 
 /** 単項の hard ルールとして事前絞り込みに使うブロック種別 */
@@ -122,12 +125,33 @@ export function buildDomains(
     bitSet(b, s);
     return b;
   };
+  // 同じ席に複数人が固定される場合は互いを除外しない（Hall 違反 = seatConflict として検出する）
+  const pinnedTo = new Map<number, Set<number>>();
+  const addPin = (m: number, s: number) => {
+    if (m < 0 || s < 0) return;
+    let set = pinnedTo.get(s);
+    if (!set) pinnedTo.set(s, (set = new Set()));
+    set.add(m);
+  };
+  for (const rule of rules) {
+    if (!rule.enabled || rule.strength !== "hard") continue;
+    const b = rule.block;
+    const mi = (id: string | null) => (id === null ? -1 : (ctx.memberIndex.get(id) ?? -1));
+    const si = (id: string | null) => (id === null ? -1 : (ctx.seatIndex.get(id) ?? -1));
+    if (b.type === "seat.pin") addPin(mi(b.memberId), si(b.seatId));
+    else if (b.type === "person.pin" && b.target?.kind === "seat")
+      addPin(mi(b.memberId), si(b.target.seatId));
+  }
   /** m を席 s に固定（他の人は s を使えない） */
   const pinTo = (m: number, s: number, ruleId: string) => {
+    addPin(m, s);
     const mask = one(s);
-    for (const x of free) if (x === m) keep(x, mask, ruleId);
-    else remove(x, mask, ruleId);
+    const pinned = pinnedTo.get(s)!;
+    for (const x of free)
+      if (x === m) keep(x, mask, ruleId);
+      else if (!pinned.has(x)) remove(x, mask, ruleId);
   };
+  const emptied = bitsetEmpty(nS);
 
   for (const rule of rules) {
     if (!rule.enabled || rule.strength !== "hard" || !UNARY_TYPES.has(rule.block.type)) continue;
@@ -150,6 +174,7 @@ export function buildDomains(
       case "seat.empty": {
         const S = compiler.seats(b.seats);
         for (const m of free) remove(m, S, id);
+        for (const s of bitsetToArray(S)) bitSet(emptied, s);
         break;
       }
       case "person.pin": {
@@ -205,6 +230,7 @@ export function buildDomains(
     free,
     restrictedBy,
     blockedSeats: bitsetCount(blocked),
+    capacity: bitsetCount(base) - bitsetCount(bitsetAnd(base, emptied)),
   };
 }
 

@@ -39,7 +39,10 @@ export const PRESET_DEFAULT_WEIGHT: Record<PresetId, number> = {
 };
 
 /** 昨年度の案が必要なプリセット */
-export const PRESET_NEEDS_PREVIOUS: ReadonlySet<PresetId> = new Set(["keepPrevious", "movePrevious"]);
+export const PRESET_NEEDS_PREVIOUS: ReadonlySet<PresetId> = new Set([
+  "keepPrevious",
+  "movePrevious",
+]);
 
 /**
  * プリセットを「ルールとして保存」するときのブロック（soft で保存する想定）。
@@ -77,7 +80,10 @@ export function presetTerms(specs: readonly PresetSpec[] = []): PresetTermInput[
   const weights = new Map<PresetId, number>();
   for (const spec of specs) {
     const id = typeof spec === "string" ? spec : spec.id;
-    const w = typeof spec === "string" ? PRESET_DEFAULT_WEIGHT[id] : (spec.weight ?? PRESET_DEFAULT_WEIGHT[id]);
+    const w =
+      typeof spec === "string"
+        ? PRESET_DEFAULT_WEIGHT[id]
+        : (spec.weight ?? PRESET_DEFAULT_WEIGHT[id]);
     weights.set(id, (weights.get(id) ?? 0) + w);
   }
   return [...weights].map(([id, weight]) => ({ id, weight, blocks: presetToRuleBlocks(id) }));
