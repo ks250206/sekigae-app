@@ -1,3 +1,106 @@
 {
-  "title": "Welcome"
+  "title": "Welcome",
+  "welcome": {
+    "title": "Welcome to Sekigae",
+    "subtitle": "Plan lab seating right in your browser.",
+    "recommended": "Recommended",
+    "showTour": "Show the guided tour",
+    "privacy": "Your data is stored only in this browser and never sent anywhere.",
+    "imported": "Backup loaded",
+    "importFailed": "Could not read the file",
+    "sample": {
+      "title": "Try the sample",
+      "body": "Explore every feature with a sample of four labs sharing rooms."
+    },
+    "empty": {
+      "title": "Start from scratch",
+      "body": "Begin by drawing your own rooms."
+    },
+    "import": {
+      "title": "Load a backup",
+      "body": "Resume from a JSON file you exported earlier."
+    }
+  },
+  "help": {
+    "title": "Help",
+    "tour": "Take the guided tour",
+    "pageTour": "How to use this page",
+    "shortcuts": "Keyboard shortcuts",
+    "sample": "Open the sample",
+    "sampleConfirmTitle": "Open the sample project?",
+    "sampleConfirmBody": "Your current project stays saved; the sample will be opened instead.",
+    "version": "Version {{version}}"
+  },
+  "shortcuts": {
+    "title": "Keyboard shortcuts",
+    "global": "General",
+    "undo": "Undo",
+    "redo": "Redo",
+    "help": "Show shortcuts"
+  },
+  "tour": {
+    "next": "Next",
+    "prev": "Back",
+    "done": "Done",
+    "welcome": {
+      "title": "Welcome!",
+      "body": "Seating takes five steps. Here is a quick tour of the main features."
+    },
+    "steps": {
+      "title": "Five steps",
+      "body": "① Rooms → ② Members → ③ Rules → ④ Seating → ⑤ Export. Move between them anytime."
+    },
+    "roomsList": {
+      "title": "Rooms",
+      "body": "Add, duplicate and reorder rooms, or start from a template."
+    },
+    "roomsTools": {
+      "title": "Tools",
+      "body": "Paint floor, outside and obstacles, then place seats and entrances. Shortcuts work too."
+    },
+    "roomsCanvas": {
+      "title": "Floor",
+      "body": "Drag rooms to move or resize. Scroll to zoom, hold Space and drag to pan."
+    },
+    "members": {
+      "title": "Members",
+      "body": "Manage names, labs, gender and roles. Double-click a cell to edit inline."
+    },
+    "membersImport": {
+      "title": "Import",
+      "body": "Import from Excel / CSV files or paste. Last year's seats can be entered too."
+    },
+    "rulesPalette": {
+      "title": "Rule blocks",
+      "body": "Drag room, seat, person, global and logic blocks. Templates are handy."
+    },
+    "rulesStack": {
+      "title": "Rules",
+      "body": "Choose required or preferred (weighted). Combine conditions with and / or / not."
+    },
+    "presets": {
+      "title": "Presets",
+      "body": "Click “Mix labs”, “Seniors at the back” and more to arrange instantly while keeping your rules."
+    },
+    "shuffle": {
+      "title": "Shuffle",
+      "body": "Rearrange randomly. Reuse a seed to reproduce the same result."
+    },
+    "seatingCanvas": {
+      "title": "Fine-tune",
+      "body": "Drag members to move or swap. Locked seats stay put when you reshuffle."
+    },
+    "violations": {
+      "title": "Rule check",
+      "body": "Unsatisfied rules appear here. Click one to jump to the seats."
+    },
+    "export": {
+      "title": "Export",
+      "body": "Export the seating chart as XLSX or PPTX."
+    },
+    "finish": {
+      "title": "You're all set!",
+      "body": "Replay the tour anytime from the Help menu."
+    }
+  }
 }

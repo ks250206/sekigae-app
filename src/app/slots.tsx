@@ -9,10 +9,6 @@ export function SaveStatusSlot() {
   return null;
 }
 export { UndoRedo as UndoRedoSlot } from "./UndoRedo";
-export function HelpMenuSlot() {
-  return null;
-}
+export { HelpMenu as HelpMenuSlot } from "@/features/onboarding/HelpMenu";
 /** 全画面に重ねるグローバル要素（ウェルカムダイアログ、ツアー等） */
-export function GlobalOverlaysSlot() {
-  return null;
-}
+export { OnboardingOverlays as GlobalOverlaysSlot } from "@/features/onboarding/OnboardingOverlays";

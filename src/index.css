@@ -162,3 +162,52 @@
   --canvas-ok: oklch(0.72 0.15 155);
   --canvas-label: oklch(0.85 0.01 260);
 }
+
+/* ガイドツアー (driver.js) のテーマ */
+.driver-popover.sekigae-tour {
+  background: var(--popover);
+  color: var(--popover-foreground);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 4px);
+  box-shadow: 0 20px 50px -12px rgb(0 0 0 / 0.35);
+  max-width: 340px;
+  font-family: var(--font-sans);
+}
+.driver-popover.sekigae-tour .driver-popover-title {
+  font-size: 15px;
+  font-weight: 600;
+}
+.driver-popover.sekigae-tour .driver-popover-description {
+  color: var(--muted-foreground);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.driver-popover.sekigae-tour .driver-popover-progress-text {
+  color: var(--muted-foreground);
+}
+.driver-popover.sekigae-tour button {
+  border-radius: calc(var(--radius) - 2px);
+  border: 1px solid var(--border);
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+  text-shadow: none;
+  font-size: 12px;
+  padding: 4px 10px;
+}
+.driver-popover.sekigae-tour .driver-popover-next-btn {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-color: var(--primary);
+}
+.driver-popover.sekigae-tour .driver-popover-arrow-side-left.driver-popover-arrow {
+  border-left-color: var(--popover);
+}
+.driver-popover.sekigae-tour .driver-popover-arrow-side-right.driver-popover-arrow {
+  border-right-color: var(--popover);
+}
+.driver-popover.sekigae-tour .driver-popover-arrow-side-top.driver-popover-arrow {
+  border-top-color: var(--popover);
+}
+.driver-popover.sekigae-tour .driver-popover-arrow-side-bottom.driver-popover-arrow {
+  border-bottom-color: var(--popover);
+}
