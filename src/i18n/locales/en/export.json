@@ -1,4 +1,109 @@
 {
   "title": "Export",
-  "description": "Export the seating chart as XLSX / PPTX."
+  "description": "Export the seating chart as XLSX / PPTX.",
+  "dialog": {
+    "format": "Format",
+    "formats": {
+      "xlsx": "Excel",
+      "pptx": "PowerPoint",
+      "png": "PNG image"
+    },
+    "plan": "Seating plan",
+    "planFinal": "Final",
+    "planActive": "Editing",
+    "planPrevious": "Previous year",
+    "rooms": "Rooms",
+    "selectAll": "Select all",
+    "selectNone": "Clear",
+    "language": "Output language",
+    "columns": "Include",
+    "colorBy": "Color by",
+    "options": "Options",
+    "floorSheet": "Add a floor sheet with all rooms",
+    "compositionTable": "Add a room composition table slide",
+    "filename": "File name",
+    "preview": "Preview",
+    "previewEmpty": "Select rooms to see a preview",
+    "download": "Download",
+    "print": "Print",
+    "progress": {
+      "loading": "Loading export library…",
+      "generating": "Generating file…",
+      "done": "Downloaded {{filename}}"
+    },
+    "error": "Export failed: {{message}}",
+    "warnings": {
+      "unassigned": "{{count}} member(s) are not seated (they are listed as unassigned).",
+      "noRooms": "No rooms are selected.",
+      "noMembers": "Nobody is seated in this plan.",
+      "noPrevious": "No previous-year plan is set, so the previous-seat columns will be empty."
+    },
+    "empty": {
+      "title": "No rooms to export",
+      "description": "Create rooms on the Rooms step and seat members on the Seating step first."
+    }
+  },
+  "columns": {
+    "role": "Role",
+    "lab": "Lab",
+    "gender": "Gender",
+    "previous": "Previous seat",
+    "note": "Note"
+  },
+  "colorBy": {
+    "role": "Role",
+    "lab": "Lab",
+    "gender": "Gender",
+    "none": "None"
+  },
+  "output": {
+    "filenameStem": "seating",
+    "seatSheet": "Seats",
+    "floorSheet": "Floor",
+    "rosterSheet": "Roster",
+    "byRoomSheet": "By room",
+    "unassignedSheet": "Unassigned",
+    "headers": {
+      "name": "Name",
+      "kana": "Kana",
+      "lab": "Lab",
+      "gender": "Gender",
+      "role": "Role",
+      "room": "Room",
+      "seat": "Seat",
+      "prevRoom": "Previous room",
+      "prevSeat": "Previous seat",
+      "change": "Change",
+      "note": "Note"
+    },
+    "change": {
+      "same": "Unchanged",
+      "sameRoom": "Moved within room",
+      "moved": "Changed room",
+      "new": "New"
+    },
+    "entrance": "Entrance",
+    "legend": "Legend",
+    "emptySeat": "Empty",
+    "noLab": "No lab",
+    "members": "Members",
+    "seats": "Seats",
+    "roomSummary": "{{members}} members / {{seats}} seats",
+    "breakdown": "Breakdown",
+    "plan": "Plan: {{name}}",
+    "createdOn": "Created: {{date}}",
+    "cover": {
+      "subtitle": "Seating chart",
+      "members": "Members",
+      "assigned": "Seated",
+      "unassigned": "Unassigned",
+      "rooms": "Rooms",
+      "seats": "Seats"
+    },
+    "overview": "Floor overview",
+    "composition": "Room composition",
+    "total": "Total",
+    "unassignedTitle": "Unassigned members",
+    "none": "None"
+  }
 }

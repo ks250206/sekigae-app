@@ -1,4 +1,109 @@
 {
   "title": "出力",
-  "description": "座席表を XLSX / PPTX で書き出します。"
+  "description": "座席表を XLSX / PPTX で書き出します。",
+  "dialog": {
+    "format": "形式",
+    "formats": {
+      "xlsx": "Excel",
+      "pptx": "PowerPoint",
+      "png": "PNG 画像"
+    },
+    "plan": "配置案",
+    "planFinal": "確定",
+    "planActive": "編集中",
+    "planPrevious": "昨年度",
+    "rooms": "対象の部屋",
+    "selectAll": "すべて選択",
+    "selectNone": "選択解除",
+    "language": "出力言語",
+    "columns": "含める項目",
+    "colorBy": "色分け",
+    "options": "オプション",
+    "floorSheet": "全部屋を配置したフロアシートを追加",
+    "compositionTable": "部屋ごとの構成表スライドを追加",
+    "filename": "ファイル名",
+    "preview": "プレビュー",
+    "previewEmpty": "部屋を選択するとプレビューが表示されます",
+    "download": "ダウンロード",
+    "print": "印刷",
+    "progress": {
+      "loading": "出力ライブラリを読み込み中…",
+      "generating": "ファイルを生成中…",
+      "done": "{{filename}} をダウンロードしました"
+    },
+    "error": "出力に失敗しました: {{message}}",
+    "warnings": {
+      "unassigned": "未配置のメンバーが {{count}} 名います（未配置リストとして出力されます）。",
+      "noRooms": "部屋が選択されていません。",
+      "noMembers": "この配置案には誰も配置されていません。",
+      "noPrevious": "昨年度の配置案が設定されていないため、昨年度の列は空欄になります。"
+    },
+    "empty": {
+      "title": "出力できる部屋がありません",
+      "description": "まず「部屋」で部屋を作成し、「席配置」でメンバーを配置してください。"
+    }
+  },
+  "columns": {
+    "role": "役職",
+    "lab": "研究室",
+    "gender": "性別",
+    "previous": "昨年度の席",
+    "note": "メモ"
+  },
+  "colorBy": {
+    "role": "役職",
+    "lab": "研究室",
+    "gender": "性別",
+    "none": "なし"
+  },
+  "output": {
+    "filenameStem": "座席表",
+    "seatSheet": "座席表",
+    "floorSheet": "フロア",
+    "rosterSheet": "名簿",
+    "byRoomSheet": "部屋別一覧",
+    "unassignedSheet": "未配置",
+    "headers": {
+      "name": "氏名",
+      "kana": "ふりがな",
+      "lab": "研究室",
+      "gender": "性別",
+      "role": "役職・学年",
+      "room": "部屋",
+      "seat": "席",
+      "prevRoom": "昨年度の部屋",
+      "prevSeat": "昨年度の席",
+      "change": "変化",
+      "note": "メモ"
+    },
+    "change": {
+      "same": "変更なし",
+      "sameRoom": "同室内で移動",
+      "moved": "部屋を移動",
+      "new": "新規"
+    },
+    "entrance": "入口",
+    "legend": "凡例",
+    "emptySeat": "空席",
+    "noLab": "所属なし",
+    "members": "人数",
+    "seats": "席数",
+    "roomSummary": "{{members}} 名 / {{seats}} 席",
+    "breakdown": "内訳",
+    "plan": "配置案: {{name}}",
+    "createdOn": "作成日: {{date}}",
+    "cover": {
+      "subtitle": "座席表",
+      "members": "メンバー",
+      "assigned": "配置済み",
+      "unassigned": "未配置",
+      "rooms": "部屋",
+      "seats": "席"
+    },
+    "overview": "フロア全体図",
+    "composition": "部屋ごとの構成",
+    "total": "合計",
+    "unassignedTitle": "未配置のメンバー",
+    "none": "なし"
+  }
 }
