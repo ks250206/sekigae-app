@@ -4,9 +4,9 @@
   "dialog": {
     "format": "Format",
     "formats": {
-      "xlsx": "Excel (XLSX)",
-      "pptx": "PowerPoint (PPTX)",
-      "png": "Image (PNG)"
+      "xlsx": "Excel",
+      "pptx": "PowerPoint",
+      "png": "PNG image"
     },
     "plan": "Seating plan",
     "planFinal": "Final",

@@ -4,9 +4,9 @@
   "dialog": {
     "format": "形式",
     "formats": {
-      "xlsx": "Excel (XLSX)",
-      "pptx": "PowerPoint (PPTX)",
-      "png": "画像 (PNG)"
+      "xlsx": "Excel",
+      "pptx": "PowerPoint",
+      "png": "PNG 画像"
     },
     "plan": "配置案",
     "planFinal": "確定",
