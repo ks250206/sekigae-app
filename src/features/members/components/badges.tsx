@@ -14,17 +14,13 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useTheme } from "@/app/theme";
 import type { RoleKey } from "@/domain/roles";
 import type { Lab } from "@/domain/schema";
 import { ROLE_COLORS, readableText } from "@/graphics/palette";
 import { cn } from "@/lib/utils";
 import type { ChangeKind } from "../lib/diff";
 import type { PrevPlacement } from "../lib/prevPlan";
-
-export function useScheme(): "light" | "dark" {
-  return useTheme().resolvedTheme;
-}
+import { useScheme } from "../lib/useScheme";
 
 export function RoleBadge({
   role,
@@ -73,7 +69,7 @@ export function LabBadge({
   full?: boolean;
   className?: string;
 }) {
-  const { t } = useTranslation("members");
+  const { t } = useTranslation(["members", "common"]);
   if (!lab)
     return (
       <span className={cn("text-muted-foreground text-xs whitespace-nowrap", className)}>
@@ -103,7 +99,7 @@ const CHANGE_ICON: Record<ChangeKind, LucideIcon> = {
   new: Sparkles,
   unassigned: CircleDashed,
 };
-export const CHANGE_TONE: Record<ChangeKind, string> = {
+const CHANGE_TONE: Record<ChangeKind, string> = {
   sameSeat: "text-sky-700 bg-sky-500/10 dark:text-sky-300",
   sameRoom: "text-emerald-700 bg-emerald-500/10 dark:text-emerald-300",
   differentRoom: "text-amber-700 bg-amber-500/10 dark:text-amber-300",
@@ -117,7 +113,7 @@ export function ChangeIcon({ kind, className }: { kind: ChangeKind; className?: 
 }
 
 export function ChangeBadge({ kind, className }: { kind: ChangeKind; className?: string }) {
-  const { t } = useTranslation("members");
+  const { t } = useTranslation(["members", "common"]);
   return (
     <span
       className={cn(
@@ -134,7 +130,7 @@ export function ChangeBadge({ kind, className }: { kind: ChangeKind; className?:
 }
 
 export function PrevPlacementText({ placement }: { placement: PrevPlacement }) {
-  const { t } = useTranslation("members");
+  const { t } = useTranslation(["members", "common"]);
   if (placement.kind === "none") return <span className="text-muted-foreground">—</span>;
   if (placement.kind === "room")
     return (

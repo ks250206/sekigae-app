@@ -1,15 +1,8 @@
 import { useTranslation } from "react-i18next";
 import { ROLE_ORDER, type RoleKey } from "@/domain/roles";
-import type { Member } from "@/domain/schema";
 import { ROLE_COLORS } from "@/graphics/palette";
 import { cn } from "@/lib/utils";
-import { useScheme } from "./badges";
-
-export function countRoles(members: readonly Pick<Member, "role">[]): Map<RoleKey, number> {
-  const m = new Map<RoleKey, number>();
-  for (const x of members) m.set(x.role, (m.get(x.role) ?? 0) + 1);
-  return m;
-}
+import { useScheme } from "../lib/useScheme";
 
 /** 役職の積み上げ横棒（シニア → ジュニア） */
 export function RoleStackBar({

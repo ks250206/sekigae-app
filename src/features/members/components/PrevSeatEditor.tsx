@@ -53,7 +53,7 @@ export function PrevSeatEditor({
 }
 
 function EditorBody({ memberId, onDone }: { memberId: ID; onDone: () => void }) {
-  const { t, i18n } = useTranslation("members");
+  const { t, i18n } = useTranslation(["members", "common"]);
   const project = useProjectStore((s) => s.project);
   const rooms = project.layout.rooms;
   const placement = prevPlacementOf(project, memberId);

@@ -18,7 +18,7 @@ export function TagInput({
   id?: string;
   className?: string;
 }) {
-  const { t } = useTranslation("members");
+  const { t } = useTranslation(["members", "common"]);
   const [text, setText] = useState("");
   const listId = useId();
   const add = (raw: string) => {

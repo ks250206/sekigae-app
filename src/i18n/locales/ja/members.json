@@ -1,4 +1,300 @@
 {
   "title": "名簿",
-  "description": "メンバーと所属研究室を管理します。"
+  "description": "メンバーと所属研究室を管理します。",
+  "actions": {
+    "add": "メンバーを追加",
+    "import": "取り込む",
+    "labs": "研究室",
+    "yearUpdate": "年度更新"
+  },
+  "columns": {
+    "name": "氏名",
+    "kana": "ふりがな",
+    "lab": "研究室",
+    "gender": "性別",
+    "role": "役職・学年",
+    "tags": "タグ",
+    "prev": "昨年度の席",
+    "current": "今年度の席",
+    "change": "変化",
+    "note": "メモ"
+  },
+  "lab": {
+    "none": "未所属"
+  },
+  "change": {
+    "sameSeat": "同じ席",
+    "sameRoom": "同じ部屋",
+    "differentRoom": "部屋を移動",
+    "new": "新規",
+    "unassigned": "未配置"
+  },
+  "summary": {
+    "members": "人数",
+    "seats": "席数",
+    "unassigned": "未配置",
+    "shortage": "席が {{count}} 席足りません"
+  },
+  "retention": {
+    "button": "残留率",
+    "title": "部屋ごとの残留率",
+    "description": "昨年度その部屋にいた人のうち、今年度も同じ部屋にいる割合です。",
+    "detail": "昨年度 {{previous}} 人 → 残留 {{stayed}} 人（同じ席 {{sameSeat}} 人）",
+    "noRooms": "部屋がありません。"
+  },
+  "search": {
+    "label": "メンバーを検索",
+    "placeholder": "氏名・ふりがな・タグで検索（{{key}}）"
+  },
+  "filter": {
+    "button": "絞り込み",
+    "clear": "絞り込みを解除",
+    "unassigned": "今年度の席が未配置",
+    "remove": "「{{label}}」の絞り込みを解除"
+  },
+  "table": {
+    "columns": "列",
+    "showColumns": "表示する列",
+    "count": "{{count}} 人",
+    "countFiltered": "{{shown}} / {{total}} 人",
+    "noMatch": "条件に一致するメンバーがいません",
+    "noName": "（氏名未入力）",
+    "unassigned": "未配置",
+    "selectAll": "すべて選択",
+    "selectRow": "{{name}} を選択",
+    "editRow": "{{name}} を編集",
+    "keyboardHint": "ダブルクリック / Enter で編集、Esc で取消、矢印・Tab で移動。最終行で Enter を押すと行を追加します。{{mod}}+Z で元に戻せます。"
+  },
+  "tags": {
+    "placeholder": "タグを入力して Enter",
+    "inlinePlaceholder": "カンマ区切り",
+    "remove": "タグ「{{tag}}」を外す",
+    "suggestions": "既存のタグ"
+  },
+  "form": {
+    "addTitle": "メンバーを追加",
+    "editTitle": "メンバーを編集",
+    "addDescription": "氏名以外は後から変更できます。",
+    "editDescription": "変更は保存すると反映されます（元に戻すこともできます）。",
+    "addedCount": "{{count}} 人追加しました。続けて入力できます。",
+    "addedToast": "{{name}} さんを追加しました",
+    "namePlaceholder": "山田 太郎",
+    "kanaPlaceholder": "やまだ たろう",
+    "nameRequired": "氏名を入力してください",
+    "duplicateName": "同じ氏名の「{{name}}」さんがすでにいます",
+    "labSearch": "研究室を検索・新規作成",
+    "createLab": "「{{name}}」を新しい研究室として追加（略称: {{short}}）",
+    "newLab": "新規: {{name}}",
+    "saveAndNext": "保存して次を追加"
+  },
+  "delete": {
+    "titleOne": "{{name}} さんを削除しますか？",
+    "titleMany": "{{count}} 人を削除しますか？",
+    "impactTitle": "次のデータからも取り除かれます",
+    "impactSeats": "{{plan}} の席割当 {{count}} 件",
+    "impactPrevious": "昨年度の席 {{count}} 件",
+    "impactRules": "{{count}} 件のルールで参照されています（ルール側は参照切れになります）",
+    "undoHint": "削除は「元に戻す」で取り消せます。",
+    "confirm": "削除する",
+    "done": "{{count}} 人を削除しました"
+  },
+  "bulk": {
+    "toolbar": "選択したメンバーの一括編集",
+    "selected": "{{count}} 人を選択中",
+    "setLab": "研究室を変更",
+    "addTag": "タグを追加",
+    "removeTag": "タグを外す",
+    "clearPrev": "昨年度の席をクリア",
+    "clearSelection": "選択解除",
+    "updated": "{{count}} 人を更新しました"
+  },
+  "prev": {
+    "defaultPlanName": "昨年度",
+    "roomOnlyLabel": "{{room}}（席不明）",
+    "roomOnlyOption": "{{room}}（席は不明）",
+    "rooms": "部屋",
+    "seats": "席",
+    "seatCount": "{{count}} 席",
+    "searchRoom": "部屋または席名で検索…",
+    "searchSeat": "席名で検索…",
+    "backToRooms": "部屋を選び直す",
+    "noMatch": "見つかりません",
+    "empty": "空席",
+    "swapWith": "{{name}} と入れ替え",
+    "swapped": "{{name}} さんと席を入れ替えました",
+    "displaced": "{{name}} さんの昨年度の席を外しました",
+    "clear": "昨年度の席をクリア",
+    "noRooms": "部屋がまだありません。先に部屋と席を作成してください。",
+    "goRooms": "部屋エディタへ"
+  },
+  "labs": {
+    "title": "研究室",
+    "description": "複数の研究室が部屋を共有する前提で、名前・略称（チップに表示）・色を管理します。",
+    "empty": "研究室がまだありません。",
+    "name": "研究室名",
+    "shortName": "略称",
+    "shortAuto": "研究室名から自動で決まります（編集すると固定）",
+    "shortDuplicate": "略称が他の研究室と重複しています。チップで区別できるよう変更してください。",
+    "members": "メンバー",
+    "color": "色を変更",
+    "customColor": "任意の色",
+    "moveUp": "上へ",
+    "moveDown": "下へ",
+    "addLabel": "研究室を追加",
+    "addPlaceholder": "例: 山田研究室",
+    "delete": "{{name}} を削除",
+    "deleteTitle": "{{name}} を削除しますか？",
+    "deleteImpact": "{{name}} には {{count}} 人が所属しています。",
+    "deleteRules": "{{count}} 件のルールで参照されています。",
+    "moveTo": "所属メンバーを移す先:",
+    "unassign": "所属メンバーを未所属にする",
+    "deleted": "{{name}} を削除しました",
+    "duplicate": "「{{a}}」と「{{b}}」は同じ研究室かもしれません。",
+    "mergeInto": "{{from}} を {{into}} に統合",
+    "merged": "{{from}} を {{into}} に統合しました"
+  },
+  "import": {
+    "title": "名簿を取り込む",
+    "description": "CSV・Excel ファイル、または Excel からコピーした表を取り込みます。",
+    "mapDescription": "列の対応を確認し、プレビューで正規化結果を確かめてから取り込みます。",
+    "fromFile": "ファイルから",
+    "fromPaste": "Excel から貼り付け",
+    "drop": "ファイルをここにドロップ",
+    "formats": "CSV（UTF-8 / Shift_JIS）・XLSX に対応",
+    "chooseFile": "ファイルを選択",
+    "templateHint": "どの列が必要か分からないときはテンプレートを使ってください。",
+    "template": {
+      "download": "テンプレート (XLSX)",
+      "filename": "名簿テンプレート.xlsx",
+      "sheet": "名簿",
+      "sample1": "山田 太郎|やまだ たろう|山田研究室|男性|M1|留学生|||",
+      "sample2": "佐藤 花子|さとう はなこ|鈴木研究室|女性|社D1||月曜のみ来室||"
+    },
+    "pastePlaceholder": "Excel やスプレッドシートで範囲をコピーして、ここに貼り付けてください（Ctrl+V）",
+    "emptyData": "データが見つかりませんでした",
+    "readError": "ファイルを読み込めませんでした",
+    "xlsUnsupported": "古い Excel 形式 (.xls) には対応していません。.xlsx か CSV で保存し直してください。",
+    "sheet": "シート",
+    "encoding": "文字コード",
+    "encodingAuto": "自動（{{detected}}）",
+    "hasHeader": "1 行目は見出し",
+    "headerAt": "{{row}} 行目は見出し",
+    "mapping": "列の対応",
+    "column": "列 {{col}}",
+    "skip": "取り込まない",
+    "needName": "「氏名」に対応する列を選んでください",
+    "fields": {
+      "name": "氏名",
+      "kana": "ふりがな",
+      "lab": "研究室",
+      "gender": "性別",
+      "role": "役職・学年",
+      "tags": "タグ",
+      "note": "メモ",
+      "prevRoom": "昨年度の部屋",
+      "prevSeat": "昨年度の席"
+    },
+    "mode": "取り込み方",
+    "modes": {
+      "add": "追加",
+      "update": "氏名で突合して更新",
+      "replace": "置き換え"
+    },
+    "modeHelp": {
+      "add": "既存のメンバーはそのまま、全員を新しく追加します",
+      "update": "同じ氏名の人は空欄以外の項目を更新し、いない人は追加します",
+      "replace": "既存のメンバーをすべて削除してから取り込みます"
+    },
+    "replaceConfirmTitle": "名簿を置き換えますか？",
+    "replaceConfirm": "現在の {{count}} 人を削除してから取り込みます。「元に戻す」で取り消せます。",
+    "preview": "プレビュー",
+    "okCount": "取込 {{count}} 件",
+    "warnCount": "警告 {{count}} 件",
+    "errorCount": "エラー {{count}} 件（取り込みません）",
+    "newLabs": "新しく作成する研究室: {{names}}",
+    "newLab": "新規: {{name}}",
+    "issuesCol": "確認事項",
+    "issues": {
+      "nameMissing": "氏名が空です",
+      "roleUnknown": "役職「{{raw}}」を判別できないため「その他」にします",
+      "genderUnknown": "性別「{{raw}}」を判別できないため「未回答」にします",
+      "labNew": "研究室「{{raw}}」を新規作成します",
+      "prevRoomUnknown": "部屋「{{raw}}」が見つかりません",
+      "prevSeatUnknown": "席「{{raw}}」が見つかりません",
+      "prevSeatRoomOnly": "席「{{raw}}」が見つからないため部屋のみ設定します",
+      "prevSeatDuplicate": "昨年度の席 {{raw}} 行目と重複しています",
+      "duplicateName": "{{raw}} 行目と同じ氏名です"
+    },
+    "run": "{{count}} 人を取り込む",
+    "done": "取り込みました（追加 {{added}} 人・更新 {{updated}} 人）",
+    "doneLabs": "研究室を {{count}} 件作成",
+    "donePrev": "昨年度の席を {{count}} 人分設定",
+    "doneSkipped": "{{count}} 行をスキップ"
+  },
+  "wizard": {
+    "title": "年度更新",
+    "description": "今年度の配置を「昨年度」として引き継ぎ、学年を一括で進級させます。",
+    "step1": "昨年度へ移行",
+    "step2": "進級・卒業",
+    "step3": "完了",
+    "choosePlan": "昨年度にする配置案",
+    "final": "確定案",
+    "assigned": "{{count}} 人配置",
+    "prevName": "昨年度データの名前",
+    "prevNameDefault": "{{year}}年度",
+    "existingPrev": "既存の昨年度データ「{{name}}」",
+    "existing": {
+      "archive": "アーカイブとして残す",
+      "overwrite": "上書きする（削除）"
+    },
+    "existingHelp": {
+      "archive": "配置案の一覧には残りますが、昨年度としては使われません",
+      "overwrite": "古い昨年度データを削除します"
+    },
+    "currentPlan": "今年度の案",
+    "current": {
+      "clear": "席の割当を空にして新しく決める",
+      "keep": "席の割当を残す"
+    },
+    "backupTitle": "実行前にバックアップを",
+    "backupHelp": "プロジェクトを JSON でダウンロードしておくと安心です。実行後も「元に戻す」で一括で戻せます。",
+    "backup": "JSON をダウンロード",
+    "track": {
+      "general": "学生",
+      "workingDoctor": "社会人ドクター"
+    },
+    "trackHelp": {
+      "general": "B3 → B4 → M1 → M2 → D1 → D2 → D3",
+      "workingDoctor": "社D1 → 社D2 → 社D3（一般の D とは別の進級トラック）"
+    },
+    "promoteTo": "{{role}} に進級",
+    "continueTo": "{{role}} に進学",
+    "graduate": "卒業",
+    "stay": "進級しない（{{role}} のまま）",
+    "continueEnrollment": "在籍継続",
+    "changeTo": "別の役職に変更",
+    "graduates": "卒業候補 {{count}} 人",
+    "graduatesHelp": "チェックした人を名簿から削除します。外すと名簿に残ります（役職は変わりません）。",
+    "willRemove": "削除",
+    "willKeep": "残す",
+    "unchanged": "教員・技術員・支援員・PD・その他の {{count}} 人は変更しません。",
+    "noStudents": "進級対象の学生はいません。",
+    "carry": "社会人ドクターの席を引き継いで固定",
+    "carryHelp": "昨年度と同じ席を今年度の案に置いてロックし、「社会人ドクターは昨年度と同じ席」の必須ルールを追加します。",
+    "ruleNote": "年度更新ウィザードで追加",
+    "run": "実行する",
+    "doneTitle": "年度更新が完了しました",
+    "donePrev": "「{{name}}」を昨年度として設定しました",
+    "donePromoted": "{{count}} 人の学年を更新しました",
+    "doneRemoved": "{{count}} 人を名簿から削除しました",
+    "doneCarried": "社会人ドクター {{count}} 人の席を引き継いで固定しました",
+    "doneRule": "「社会人ドクターは昨年度と同じ席」ルールを追加しました",
+    "undoHint": "「元に戻す」1 回で年度更新の前に戻せます。",
+    "nextImport": "新しく入るメンバーを名簿に取り込みましょう。",
+    "importButton": "新メンバーを取り込む"
+  },
+  "empty": {
+    "title": "まだメンバーがいません",
+    "description": "1 人ずつ追加するか、CSV・Excel の名簿から取り込みましょう。複数の研究室のメンバーをまとめて管理できます。"
+  }
 }

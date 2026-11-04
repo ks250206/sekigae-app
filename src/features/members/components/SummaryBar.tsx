@@ -12,11 +12,13 @@ import { cn } from "@/lib/utils";
 import { previousPlan, totalSeats } from "@/store/selectors";
 import { retentionByRoom } from "../lib/diff";
 import type { MemberRow } from "../lib/table";
-import { ColorDot, LabBadge, useScheme } from "./badges";
-import { RoleStackBar, countRoles } from "./RoleStackBar";
+import { ColorDot, LabBadge } from "./badges";
+import { useScheme } from "../lib/useScheme";
+import { countRoles } from "../lib/stats";
+import { RoleStackBar } from "./RoleStackBar";
 
 export function SummaryBar({ project, rows }: { project: Project; rows: readonly MemberRow[] }) {
-  const { t, i18n } = useTranslation("members");
+  const { t, i18n } = useTranslation(["members", "common"]);
   const lng = i18n.language;
   const scheme = useScheme();
   const members = project.members;
@@ -55,9 +57,7 @@ export function SummaryBar({ project, rows }: { project: Project; rows: readonly
         </div>
         <div>
           <div className="text-muted-foreground text-xs">{t("summary.unassigned")}</div>
-          <div className="text-2xl font-semibold tabular-nums">
-            {formatNumber(unassigned, lng)}
-          </div>
+          <div className="text-2xl font-semibold tabular-nums">{formatNumber(unassigned, lng)}</div>
         </div>
       </div>
 
@@ -106,7 +106,7 @@ export function SummaryBar({ project, rows }: { project: Project; rows: readonly
 }
 
 function RetentionPopover({ project }: { project: Project }) {
-  const { t, i18n } = useTranslation("members");
+  const { t, i18n } = useTranslation(["members", "common"]);
   const stats = useMemo(() => retentionByRoom(project), [project]);
   return (
     <Popover>

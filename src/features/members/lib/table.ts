@@ -145,3 +145,17 @@ export function allTags(members: readonly Member[]): string[] {
   for (const m of members) for (const t of m.tags) n.set(t, (n.get(t) ?? 0) + 1);
   return [...n.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([t]) => t);
 }
+
+export const COLUMN_KEYS = [
+  "name",
+  "kana",
+  "lab",
+  "gender",
+  "role",
+  "tags",
+  "prev",
+  "current",
+  "change",
+  "note",
+] as const;
+export type ColumnKey = (typeof COLUMN_KEYS)[number];

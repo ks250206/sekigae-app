@@ -30,7 +30,7 @@ export function LabCombobox({
   onChange: (v: LabChoice) => void;
   id?: string;
 }) {
-  const { t } = useTranslation("members");
+  const { t } = useTranslation(["members", "common"]);
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const selected = value.kind === "lab" ? labs.find((l) => l.id === value.id) : undefined;

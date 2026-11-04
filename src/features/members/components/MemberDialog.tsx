@@ -1,6 +1,6 @@
 /** メンバーの追加・編集ダイアログ。#68 */
 import { AlertTriangle, Trash2 } from "lucide-react";
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useId, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -69,7 +69,7 @@ export function MemberDialog({
   memberId?: ID;
   defaults?: Partial<FormState>;
 }) {
-  const { t } = useTranslation("members");
+  const { t } = useTranslation(["members", "common"]);
   const members = useProjectStore((s) => s.project.members);
   const labs = useProjectStore((s) => s.project.labs);
   const member = memberId ? members.find((m) => m.id === memberId) : undefined;
@@ -80,15 +80,6 @@ export function MemberDialog({
   const nameRef = useRef<HTMLInputElement>(null);
   const uid = useId();
   const tagSuggestions = useMemo(() => allTags(members), [members]);
-
-  useEffect(() => {
-    if (open) {
-      setForm(fromMember(member, defaults));
-      setError(null);
-      setAdded(0);
-    }
-    // 開いたときだけ初期化する（編集中のストア更新で入力を消さない）
-  }, [open, memberId]);
 
   const set = <K extends keyof FormState>(k: K, v: FormState[K]) =>
     setForm((f) => ({ ...f, [k]: v }));

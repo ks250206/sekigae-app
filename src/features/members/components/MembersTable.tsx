@@ -24,24 +24,10 @@ import { cn } from "@/lib/utils";
 import { useProjectStore } from "@/store/project";
 import { normalizeName, parseTags } from "../lib/normalize";
 import { prevSeatActions } from "../lib/prevPlan";
-import type { MemberRow, SortKey, SortState } from "../lib/table";
+import type { ColumnKey, MemberRow, SortKey, SortState } from "../lib/table";
 import { ChangeBadge, LabBadge, PrevPlacementText, RoleBadge } from "./badges";
 import { PrevSeatEditor } from "./PrevSeatEditor";
 import { NativeRoleOptions } from "./RoleSelect";
-
-export const COLUMN_KEYS = [
-  "name",
-  "kana",
-  "lab",
-  "gender",
-  "role",
-  "tags",
-  "prev",
-  "current",
-  "change",
-  "note",
-] as const;
-export type ColumnKey = (typeof COLUMN_KEYS)[number];
 
 type EditKind = "text" | "lab" | "gender" | "role" | "prev";
 const EDIT_KIND: Partial<Record<ColumnKey, EditKind>> = {
@@ -171,7 +157,7 @@ function clearCell(m: Member, col: ColumnKey) {
 
 export function MembersTable(props: MembersTableProps) {
   const { rows, columns, readOnly, selected, sort, onSort, onAddRow } = props;
-  const { t } = useTranslation("members");
+  const { t } = useTranslation(["members", "common"]);
   const [active, setActive] = useState<Active | null>(null);
   const [editing, setEditing] = useState<{ initial: string } | null>(null);
   const [prevOpen, setPrevOpen] = useState<ID | null>(null);
@@ -193,19 +179,11 @@ export function MembersTable(props: MembersTableProps) {
     }
   });
 
-  // 行が消えたらアクティブセルを外す
-  useEffect(() => {
-    if (active && rowIndex(active.row) < 0 && !editing) setActive(null);
-  }, [active, editing, rowIndex]);
-
-  const go = useCallback(
-    (a: Active | null, edit: { initial: string } | null = null) => {
-      focusPending.current = true;
-      setActive(a);
-      setEditing(edit);
-    },
-    [],
-  );
+  const go = useCallback((a: Active | null, edit: { initial: string } | null = null) => {
+    focusPending.current = true;
+    setActive(a);
+    setEditing(edit);
+  }, []);
 
   const moveFrom = useCallback(
     (from: Active, dir: Move): Active | "addRow" | null => {
@@ -416,11 +394,14 @@ interface RowProps {
 }
 
 const MemberRowView = memo(function MemberRowView(p: RowProps) {
-  const { t } = useTranslation("members");
+  const { t } = useTranslation(["members", "common"]);
   const { member: m } = p.row;
   const cell = (col: ColumnKey): ReactNode => {
     const isEditing = p.activeCol === col && p.editing;
-    if (isEditing) return <CellEditor col={col} initial={p.editing!.initial} labs={p.labs} onDone={p.onFinishEdit} />;
+    if (isEditing)
+      return (
+        <CellEditor col={col} initial={p.editing!.initial} labs={p.labs} onDone={p.onFinishEdit} />
+      );
     switch (col) {
       case "name":
         return m.name ? (
@@ -476,10 +457,7 @@ const MemberRowView = memo(function MemberRowView(p: RowProps) {
   };
   return (
     <tr
-      className={cn(
-        "group hover:bg-muted/40",
-        p.selected && "bg-primary/5 hover:bg-primary/10",
-      )}
+      className={cn("group hover:bg-muted/40", p.selected && "bg-primary/5 hover:bg-primary/10")}
       data-member={m.id}
       data-testid="member-row"
       aria-selected={p.selected}
@@ -515,7 +493,9 @@ const MemberRowView = memo(function MemberRowView(p: RowProps) {
             onMouseDown={() => !active && p.onActivate({ row: m.id, col })}
             onFocus={() => !active && p.onActivate({ row: m.id, col })}
             onDoubleClick={() => editable && p.onStartEdit({ row: m.id, col })}
-            onClick={() => col === "prev" && active && editable && p.onStartEdit({ row: m.id, col })}
+            onClick={() =>
+              col === "prev" && active && editable && p.onStartEdit({ row: m.id, col })
+            }
           >
             {cell(col)}
           </td>
@@ -550,7 +530,7 @@ function CellEditor({
   labs: readonly Lab[];
   onDone: (value: string | null, move: Move | null) => void;
 }) {
-  const { t } = useTranslation("members");
+  const { t } = useTranslation(["members", "common"]);
   const [value, setValue] = useState(initial);
   const done = useRef(false);
   const ref = useRef<HTMLInputElement & HTMLSelectElement>(null);
@@ -605,7 +585,11 @@ function CellEditor({
     );
   if (kind === "gender")
     return (
-      <select {...common} onChange={(e) => setValue(e.target.value)} aria-label={t("columns.gender")}>
+      <select
+        {...common}
+        onChange={(e) => setValue(e.target.value)}
+        aria-label={t("columns.gender")}
+      >
         {GENDERS.map((g) => (
           <option key={g} value={g}>
             {t(`common:genders.${g}`)}

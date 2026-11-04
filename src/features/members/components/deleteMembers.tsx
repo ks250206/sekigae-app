@@ -8,14 +8,15 @@ import { memberDeleteImpact } from "../lib/impact";
 /** 影響（席割当・昨年度・ルール参照）を示して確認し、削除する。1 回の Undo */
 export async function confirmDeleteMembers(
   ids: readonly ID[],
-  t: TFunction<"members">,
+  t: TFunction<["members", "common"]>,
 ): Promise<boolean> {
   if (!ids.length) return false;
   const p = useProjectStore.getState().project;
   const impact = memberDeleteImpact(p, ids);
   const name = ids.length === 1 ? p.members.find((m) => m.id === ids[0])?.name : undefined;
   const lines: string[] = [];
-  for (const s of impact.seats) lines.push(t("delete.impactSeats", { plan: s.plan, count: s.count }));
+  for (const s of impact.seats)
+    lines.push(t("delete.impactSeats", { plan: s.plan, count: s.count }));
   if (impact.previous) lines.push(t("delete.impactPrevious", { count: impact.previous }));
   if (impact.rules) lines.push(t("delete.impactRules", { count: impact.rules }));
   const ok = await confirm({

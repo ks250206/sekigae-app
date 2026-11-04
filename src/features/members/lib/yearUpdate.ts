@@ -133,3 +133,8 @@ export function runYearUpdate(o: YearUpdateOptions): YearUpdateResult {
   });
   return result;
 }
+
+/** 日本の年度（4 月始まり） */
+export function fiscalYear(d = new Date()): number {
+  return d.getMonth() >= 3 ? d.getFullYear() : d.getFullYear() - 1;
+}

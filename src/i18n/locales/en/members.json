@@ -1,4 +1,300 @@
 {
   "title": "Members",
-  "description": "Manage members and their labs."
+  "description": "Manage members and their labs.",
+  "actions": {
+    "add": "Add member",
+    "import": "Import",
+    "labs": "Labs",
+    "yearUpdate": "New year"
+  },
+  "columns": {
+    "name": "Name",
+    "kana": "Reading",
+    "lab": "Lab",
+    "gender": "Gender",
+    "role": "Role",
+    "tags": "Tags",
+    "prev": "Last year's seat",
+    "current": "Current seat",
+    "change": "Change",
+    "note": "Note"
+  },
+  "lab": {
+    "none": "No lab"
+  },
+  "change": {
+    "sameSeat": "Same seat",
+    "sameRoom": "Same room",
+    "differentRoom": "Moved room",
+    "new": "New",
+    "unassigned": "Unassigned"
+  },
+  "summary": {
+    "members": "Members",
+    "seats": "Seats",
+    "unassigned": "Unassigned",
+    "shortage": "Short of {{count}} seat(s)"
+  },
+  "retention": {
+    "button": "Retention",
+    "title": "Retention by room",
+    "description": "Share of last year's occupants of each room who stay in the same room this year.",
+    "detail": "Last year {{previous}} → stayed {{stayed}} (same seat {{sameSeat}})",
+    "noRooms": "No rooms yet."
+  },
+  "search": {
+    "label": "Search members",
+    "placeholder": "Search name, reading, tags ({{key}})"
+  },
+  "filter": {
+    "button": "Filter",
+    "clear": "Clear filters",
+    "unassigned": "No seat this year",
+    "remove": "Remove filter \"{{label}}\""
+  },
+  "table": {
+    "columns": "Columns",
+    "showColumns": "Visible columns",
+    "count": "{{count}} members",
+    "countFiltered": "{{shown}} / {{total}} members",
+    "noMatch": "No members match the filters",
+    "noName": "(no name)",
+    "unassigned": "Unassigned",
+    "selectAll": "Select all",
+    "selectRow": "Select {{name}}",
+    "editRow": "Edit {{name}}",
+    "keyboardHint": "Double-click or Enter to edit, Esc to cancel, arrows/Tab to move. Enter on the last row adds a row. {{mod}}+Z to undo."
+  },
+  "tags": {
+    "placeholder": "Type a tag and press Enter",
+    "inlinePlaceholder": "Comma separated",
+    "remove": "Remove tag \"{{tag}}\"",
+    "suggestions": "Existing tags"
+  },
+  "form": {
+    "addTitle": "Add member",
+    "editTitle": "Edit member",
+    "addDescription": "Everything except the name can be changed later.",
+    "editDescription": "Changes apply when you save (and can be undone).",
+    "addedCount": "Added {{count}}. Keep going.",
+    "addedToast": "Added {{name}}",
+    "namePlaceholder": "Taro Yamada",
+    "kanaPlaceholder": "Reading for sorting (optional)",
+    "nameRequired": "Please enter a name",
+    "duplicateName": "\"{{name}}\" already exists",
+    "labSearch": "Search or create a lab",
+    "createLab": "Create lab \"{{name}}\" (short: {{short}})",
+    "newLab": "New: {{name}}",
+    "saveAndNext": "Save & add next"
+  },
+  "delete": {
+    "titleOne": "Delete {{name}}?",
+    "titleMany": "Delete {{count}} members?",
+    "impactTitle": "They will also be removed from",
+    "impactSeats": "{{count}} seat assignment(s) in {{plan}}",
+    "impactPrevious": "{{count}} last-year seat(s)",
+    "impactRules": "Referenced by {{count}} rule(s) (those references will break)",
+    "undoHint": "You can undo the deletion.",
+    "confirm": "Delete",
+    "done": "Deleted {{count}} member(s)"
+  },
+  "bulk": {
+    "toolbar": "Bulk edit selected members",
+    "selected": "{{count}} selected",
+    "setLab": "Set lab",
+    "addTag": "Add tag",
+    "removeTag": "Remove tag",
+    "clearPrev": "Clear last year's seat",
+    "clearSelection": "Clear selection",
+    "updated": "Updated {{count}} member(s)"
+  },
+  "prev": {
+    "defaultPlanName": "Last year",
+    "roomOnlyLabel": "{{room}} (seat unknown)",
+    "roomOnlyOption": "{{room}} (seat unknown)",
+    "rooms": "Rooms",
+    "seats": "Seats",
+    "seatCount": "{{count}} seats",
+    "searchRoom": "Search room or seat…",
+    "searchSeat": "Search seat…",
+    "backToRooms": "Choose another room",
+    "noMatch": "No results",
+    "empty": "Empty",
+    "swapWith": "Swap with {{name}}",
+    "swapped": "Swapped seats with {{name}}",
+    "displaced": "Removed {{name}}'s last-year seat",
+    "clear": "Clear last year's seat",
+    "noRooms": "There are no rooms yet. Create rooms and seats first.",
+    "goRooms": "Open the room editor"
+  },
+  "labs": {
+    "title": "Labs",
+    "description": "Labs may share rooms. Manage each lab's name, short name (shown on chips) and color.",
+    "empty": "No labs yet.",
+    "name": "Lab name",
+    "shortName": "Short name",
+    "shortAuto": "Derived from the lab name (editing it pins it)",
+    "shortDuplicate": "This short name is used by another lab. Change it so chips can be told apart.",
+    "members": "Members",
+    "color": "Change color",
+    "customColor": "Custom color",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "addLabel": "Add a lab",
+    "addPlaceholder": "e.g. Smith Lab",
+    "delete": "Delete {{name}}",
+    "deleteTitle": "Delete {{name}}?",
+    "deleteImpact": "{{name}} has {{count}} member(s).",
+    "deleteRules": "Referenced by {{count}} rule(s).",
+    "moveTo": "Move its members to:",
+    "unassign": "Leave its members without a lab",
+    "deleted": "Deleted {{name}}",
+    "duplicate": "\"{{a}}\" and \"{{b}}\" may be the same lab.",
+    "mergeInto": "Merge {{from}} into {{into}}",
+    "merged": "Merged {{from}} into {{into}}"
+  },
+  "import": {
+    "title": "Import members",
+    "description": "Import from a CSV/Excel file or from a table copied from Excel.",
+    "mapDescription": "Check the column mapping and the normalized preview, then import.",
+    "fromFile": "From file",
+    "fromPaste": "Paste from Excel",
+    "drop": "Drop a file here",
+    "formats": "CSV (UTF-8 / Shift_JIS) and XLSX",
+    "chooseFile": "Choose file",
+    "templateHint": "Not sure which columns to use? Start from the template.",
+    "template": {
+      "download": "Template (XLSX)",
+      "filename": "members-template.xlsx",
+      "sheet": "Members",
+      "sample1": "Taro Yamada||Yamada Lab|Male|M1|International|||",
+      "sample2": "Hanako Sato||Suzuki Lab|Female|WD1||Mondays only||"
+    },
+    "pastePlaceholder": "Copy a range in Excel or a spreadsheet and paste it here (Ctrl+V)",
+    "emptyData": "No data found",
+    "readError": "Could not read the file",
+    "xlsUnsupported": "Legacy Excel files (.xls) are not supported. Save as .xlsx or CSV.",
+    "sheet": "Sheet",
+    "encoding": "Encoding",
+    "encodingAuto": "Auto ({{detected}})",
+    "hasHeader": "First row is a header",
+    "headerAt": "Row {{row}} is the header",
+    "mapping": "Column mapping",
+    "column": "Column {{col}}",
+    "skip": "Don't import",
+    "needName": "Choose the column for \"Name\"",
+    "fields": {
+      "name": "Name",
+      "kana": "Reading",
+      "lab": "Lab",
+      "gender": "Gender",
+      "role": "Role",
+      "tags": "Tags",
+      "note": "Note",
+      "prevRoom": "Previous room",
+      "prevSeat": "Previous seat"
+    },
+    "mode": "Mode",
+    "modes": {
+      "add": "Add",
+      "update": "Update by name",
+      "replace": "Replace"
+    },
+    "modeHelp": {
+      "add": "Keep existing members and add everyone as new",
+      "update": "Update non-empty fields of members with the same name; add the rest",
+      "replace": "Delete all existing members, then import"
+    },
+    "replaceConfirmTitle": "Replace the roster?",
+    "replaceConfirm": "The current {{count}} member(s) will be deleted before importing. You can undo this.",
+    "preview": "Preview",
+    "okCount": "{{count}} to import",
+    "warnCount": "{{count}} warning(s)",
+    "errorCount": "{{count}} error(s) (skipped)",
+    "newLabs": "New labs: {{names}}",
+    "newLab": "New: {{name}}",
+    "issuesCol": "Notes",
+    "issues": {
+      "nameMissing": "Name is empty",
+      "roleUnknown": "Unknown role \"{{raw}}\" → Other",
+      "genderUnknown": "Unknown gender \"{{raw}}\" → Prefer not to say",
+      "labNew": "Lab \"{{raw}}\" will be created",
+      "prevRoomUnknown": "Room \"{{raw}}\" not found",
+      "prevSeatUnknown": "Seat \"{{raw}}\" not found",
+      "prevSeatRoomOnly": "Seat \"{{raw}}\" not found; only the room is set",
+      "prevSeatDuplicate": "Previous seat {{raw}} is already used by another row",
+      "duplicateName": "Same name as row {{raw}}"
+    },
+    "run": "Import {{count}}",
+    "done": "Imported (added {{added}}, updated {{updated}})",
+    "doneLabs": "{{count}} lab(s) created",
+    "donePrev": "last-year seats set for {{count}}",
+    "doneSkipped": "{{count}} row(s) skipped"
+  },
+  "wizard": {
+    "title": "New academic year",
+    "description": "Carry this year's seating over as \"last year\" and promote everyone at once.",
+    "step1": "Archive seating",
+    "step2": "Promote & graduate",
+    "step3": "Done",
+    "choosePlan": "Seating plan to use as last year",
+    "final": "Final",
+    "assigned": "{{count}} seated",
+    "prevName": "Name for last year's data",
+    "prevNameDefault": "FY{{year}}",
+    "existingPrev": "Existing last-year data \"{{name}}\"",
+    "existing": {
+      "archive": "Keep as archive",
+      "overwrite": "Overwrite (delete)"
+    },
+    "existingHelp": {
+      "archive": "It stays in the plan list but is no longer used as last year",
+      "overwrite": "Delete the old last-year data"
+    },
+    "currentPlan": "This year's plan",
+    "current": {
+      "clear": "Clear seat assignments and start fresh",
+      "keep": "Keep seat assignments"
+    },
+    "backupTitle": "Back up first",
+    "backupHelp": "Download the project as JSON just in case. You can also undo the whole update afterwards.",
+    "backup": "Download JSON",
+    "track": {
+      "general": "Students",
+      "workingDoctor": "Working doctoral students"
+    },
+    "trackHelp": {
+      "general": "B3 → B4 → M1 → M2 → D1 → D2 → D3",
+      "workingDoctor": "WD1 → WD2 → WD3 (separate from regular D)"
+    },
+    "promoteTo": "Promote to {{role}}",
+    "continueTo": "Continue to {{role}}",
+    "graduate": "Graduate",
+    "stay": "Don't promote (stay {{role}})",
+    "continueEnrollment": "Continue enrollment",
+    "changeTo": "Change to another role",
+    "graduates": "{{count}} graduation candidate(s)",
+    "graduatesHelp": "Checked members are removed from the roster. Unchecked ones stay (role unchanged).",
+    "willRemove": "remove",
+    "willKeep": "keep",
+    "unchanged": "{{count}} faculty, staff, postdocs and others are not changed.",
+    "noStudents": "No students to promote.",
+    "carry": "Carry over working doctoral students' seats and lock them",
+    "carryHelp": "Puts them in last year's seats in this year's plan, locks those seats and adds a required rule \"working doctoral students keep last year's seat\".",
+    "ruleNote": "Added by the new-year wizard",
+    "run": "Run update",
+    "doneTitle": "The new year is set up",
+    "donePrev": "\"{{name}}\" is now last year's seating",
+    "donePromoted": "Updated the role of {{count}} member(s)",
+    "doneRemoved": "Removed {{count}} member(s)",
+    "doneCarried": "Carried over and locked {{count}} working doctoral seat(s)",
+    "doneRule": "Added the rule \"working doctoral students keep last year's seat\"",
+    "undoHint": "A single undo reverts the whole update.",
+    "nextImport": "Now import the new members.",
+    "importButton": "Import new members"
+  },
+  "empty": {
+    "title": "No members yet",
+    "description": "Add members one by one or import a CSV/Excel roster. Members of several labs can be managed together."
+  }
 }

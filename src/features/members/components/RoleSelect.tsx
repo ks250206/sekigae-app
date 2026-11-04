@@ -8,14 +8,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ROLE_GROUPS, ROLE_ORDER, ROLES, type RoleGroup, type RoleKey } from "@/domain/roles";
+import type { RoleKey } from "@/domain/roles";
+import { ROLE_GROUPED } from "../lib/stats";
 import { RoleBadge } from "./badges";
-
-/** シニア順・グループごとの役職一覧 */
-export const ROLE_GROUPED: { group: RoleGroup; roles: RoleKey[] }[] = ROLE_GROUPS.map((group) => ({
-  group,
-  roles: ROLE_ORDER.filter((r) => ROLES[r].group === group),
-})).filter((g) => g.roles.length > 0);
 
 export function RoleSelect({
   value,
@@ -33,7 +28,12 @@ export function RoleSelect({
   const { t } = useTranslation();
   return (
     <Select value={value} onValueChange={(v) => onChange(v as RoleKey)}>
-      <SelectTrigger id={id} className={className ?? "w-full"} size={size} data-testid="role-select">
+      <SelectTrigger
+        id={id}
+        className={className ?? "w-full"}
+        size={size}
+        data-testid="role-select"
+      >
         <SelectValue />
       </SelectTrigger>
       <SelectContent className="max-h-80">
