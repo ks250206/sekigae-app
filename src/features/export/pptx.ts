@@ -7,6 +7,7 @@ import type PptxGenJS from "pptxgenjs";
 import type { Facing } from "@/domain/schema";
 import { readableText, ROLE_COLORS } from "@/graphics/palette";
 import { outputFonts } from "./fonts";
+import { fitFont, nameLines } from "./text";
 import {
   cellRuns,
   ENTRANCE_COLOR,
@@ -24,9 +25,6 @@ type Slide = PptxGenJS.Slide;
 type TextRun = PptxGenJS.TextProps;
 /** 型定義に無いが PptxGenJS が対応しているカスタム図形 */
 const CUSTOM_GEOMETRY = "custGeom" as PptxGenJS.SHAPE_NAME;
-
-export const PPTX_MIME =
-  "application/vnd.openxmlformats-officedocument.presentationml.presentation";
 
 export async function loadPptxGenJS(): Promise<PptxCtor> {
   const mod = (await import("pptxgenjs")) as { default: PptxCtor };
@@ -58,41 +56,12 @@ interface Box {
   h: number;
 }
 
-/** 文字列の幅（em 単位）の概算: 全角 1.0、半角 0.55 */
-export function textEm(s: string): number {
-  let n = 0;
-  for (const ch of s) n += /[ᄀ-ᅟ⺀-꓏가-힣豈-﫿︰-﹏＀-｠￠-￦]/u.test(ch) ? 1 : 0.55;
-  return n;
-}
-
 /** 箱（inch）に収まるフォントサイズ（pt） */
 export function fitFontSize(text: string, wIn: number, hIn: number, max: number, min = 5): number {
-  const em = Math.max(textEm(text), 1);
-  const byW = (wIn * 72 * 0.8) / em;
-  const byH = hIn * 72 * 0.8;
-  return Math.max(min, Math.min(max, byW, byH));
+  return fitFont(text, wIn * 72, hIn * 72, max, min);
 }
 
 const round = (n: number) => Math.round(n * 10) / 10;
-
-/** 氏名を 1 行 or 姓・名の 2 行に分け、大きく表示できる方を選ぶ */
-export function nameLines(name: string, wIn: number, hIn: number, max: number) {
-  const one = fitFontSize(name, wIn, hIn, max);
-  const parts = name
-    .trim()
-    .split(/[\s\u3000]+/u)
-    .filter(Boolean);
-  if (parts.length >= 2) {
-    const first = parts[0]!;
-    const rest = parts.slice(1).join(" ");
-    const two = Math.min(
-      fitFontSize(first, wIn, hIn / 2, max),
-      fitFontSize(rest, wIn, hIn / 2, max),
-    );
-    if (two > one * 1.15) return { lines: [first, rest], fontSize: round(two) };
-  }
-  return { lines: [name], fontSize: round(one) };
-}
 
 function addFooter(slide: Slide, ctx: Ctx) {
   const { model } = ctx;
@@ -385,7 +354,7 @@ function drawSeat(slide: Slide, ctx: Ctx, seat: ExportSeat, ox: number, oy: numb
   const m = seat.member;
   const runs: TextRun[] = [];
   if (m) {
-    const lines = nameLines(m.name, w, m.subtitle ? h * 0.62 : h, 14);
+    const lines = nameLines(m.name, w * 72, (m.subtitle ? h * 0.62 : h) * 72, 14);
     lines.lines.forEach((text, i) =>
       runs.push({
         text,

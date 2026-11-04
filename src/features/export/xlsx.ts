@@ -24,8 +24,6 @@ export async function loadExcelJS(): Promise<ExcelModule> {
   return mod.default ?? mod;
 }
 
-export const XLSX_MIME = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-
 /** グリッド 1 マスの列幅（文字数）と行高（pt）。ほぼ正方形になるよう調整 */
 export const GRID_COL_WIDTH = 11;
 export const GRID_ROW_HEIGHT = 60;

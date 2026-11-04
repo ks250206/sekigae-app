@@ -2,7 +2,8 @@ import JSZip from "jszip";
 import { describe, expect, it } from "vite-plus/test";
 import { makeExportFixture } from "./fixture";
 import { buildExportModel, EXPORT_COLUMNS, type ExportOptions } from "./model";
-import { exportPptx, fitFontSize, textEm } from "./pptx";
+import { exportPptx, fitFontSize } from "./pptx";
+import { nameLines, textEm } from "./text";
 
 const DATE = new Date(2026, 3, 1);
 
@@ -31,6 +32,8 @@ describe("text fitting", () => {
     expect(fitFontSize("山田 太郎", 0.8, 0.5, 14)).toBeLessThan(14);
     expect(fitFontSize("A", 2, 2, 14)).toBe(14);
     expect(fitFontSize("とても長い名前とても長い名前", 0.3, 0.3, 14)).toBe(5);
+    expect(nameLines("山田 太郎", 40, 40, 14).lines).toEqual(["山田", "太郎"]);
+    expect(nameLines("Al", 40, 40, 14).lines).toEqual(["Al"]);
   });
 });
 
