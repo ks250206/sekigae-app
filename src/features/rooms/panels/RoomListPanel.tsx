@@ -25,7 +25,7 @@ import {
   Trash,
   TriangleExclamationPoint,
 } from "lucide-react";
-import { memo, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -109,10 +109,18 @@ const RoomRow = memo(function RoomRow({ room }: { room: Room }) {
     id: room.id,
   });
   const noEntrance = room.entrances.length === 0;
+  const rowRef = useRef<HTMLLIElement | null>(null);
+  // キャンバスで選択されたらリストの該当行を見える位置へ
+  useEffect(() => {
+    if (selected) rowRef.current?.scrollIntoView?.({ block: "nearest" });
+  }, [selected]);
 
   return (
     <li
-      ref={setNodeRef}
+      ref={(el) => {
+        setNodeRef(el);
+        rowRef.current = el;
+      }}
       style={{ transform: CSS.Transform.toString(transform), transition }}
       role="option"
       aria-selected={selected}
