@@ -163,7 +163,7 @@ export function BlockShell({
       className={cn("group/block relative", dragging && "opacity-40", className)}
       style={{ "--cat": color } as CSSProperties}
       data-testid={testId}
-      data-enabled={enabled}
+      data-enabled={String(enabled)}
       data-category={def.category}
       {...dataAttrs}
     >

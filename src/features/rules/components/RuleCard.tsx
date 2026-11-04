@@ -420,6 +420,7 @@ export function RuleCard({ rule, violationCount, dangling, collapsed }: RuleCard
       data-rule-id={rule.id}
       data-rule-type={rule.block.type}
       data-strength={rule.strength}
+      data-enabled={String(rule.enabled)}
     >
       {isCollapsed ? (
         <CollapsedRow

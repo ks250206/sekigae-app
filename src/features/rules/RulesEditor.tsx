@@ -6,6 +6,7 @@ import {
   DndContext,
   DragOverlay,
   KeyboardSensor,
+  MeasuringStrategy,
   PointerSensor,
   pointerWithin,
   useDroppable,
@@ -49,22 +50,26 @@ import { summarizeBlock } from "./summary";
 
 const STACK_ID = "rule-stack";
 
+/**
+ * 当たり判定: 論理ブロックの隙間（gap）を最優先。
+ * 新規（パレット）・子ルールはポインタ直下のルール → スタック内なら最寄りのルール。
+ * 既存ルールの並べ替えは dnd-kit 標準の closestCenter。
+ */
 const collision: CollisionDetection = (args) => {
   const ruleContainers = args.droppableContainers.filter(
     (c) => (c.data.current as DropData | undefined)?.target === "rule",
   );
-  if (!args.pointerCoordinates)
-    return closestCenter({ ...args, droppableContainers: ruleContainers });
-  const within = pointerWithin(args);
+  const sorting = (args.active.data.current as DragData | undefined)?.source === "rule";
+  const within = args.pointerCoordinates ? pointerWithin(args) : [];
   const gaps = within.filter((c) => String(c.id).startsWith("gap|"));
   if (gaps.length) return gaps;
-  const rules = within.filter((c) => !String(c.id).startsWith("gap|") && c.id !== STACK_ID);
-  if (rules.length) return rules;
-  if (within.some((c) => c.id === STACK_ID)) {
-    const cc = closestCenter({ ...args, droppableContainers: ruleContainers });
-    return cc.length ? cc : within;
+  if (args.pointerCoordinates && !sorting) {
+    const rules = within.filter((c) => !String(c.id).startsWith("gap|") && c.id !== STACK_ID);
+    if (rules.length) return rules;
+    if (!within.some((c) => c.id === STACK_ID)) return [];
   }
-  return [];
+  const cc = closestCenter({ ...args, droppableContainers: ruleContainers });
+  return cc.length ? cc : within.filter((c) => c.id === STACK_ID);
 };
 
 export interface RulesEditorProps {
@@ -203,6 +208,15 @@ export function RulesEditor({ violationCounts, feasibility }: RulesEditorProps) 
       <DndContext
         sensors={sensors}
         collisionDetection={collision}
+        measuring={{
+          droppable: {
+            // 並べ替え中は開始時の位置で判定（dnd-kit 標準）、新規ドラッグは自動スクロールに追従
+            strategy:
+              active?.data.source === "rule"
+                ? MeasuringStrategy.WhileDragging
+                : MeasuringStrategy.Always,
+          },
+        }}
         onDragStart={onDragStart}
         onDragMove={onDragMove}
         onDragOver={onDragMove}
