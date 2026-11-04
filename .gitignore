@@ -28,3 +28,6 @@ dev-dist
 playwright-report
 test-results
 *.tsbuildinfo
+
+# agent worktrees
+.claude/
