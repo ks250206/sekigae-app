@@ -127,3 +127,38 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* キャンバス用カラートークン（SVG から var(--canvas-*) で参照） */
+:root {
+  --canvas-bg: oklch(0.975 0.004 255);
+  --canvas-grid: oklch(0.9 0.008 255);
+  --canvas-floor: oklch(0.995 0.002 90);
+  --canvas-floor-pattern: oklch(0.955 0.006 80);
+  --canvas-void: transparent;
+  --canvas-wall: oklch(0.42 0.03 260);
+  --canvas-obstacle: oklch(0.82 0.01 260);
+  --canvas-desk: oklch(0.88 0.04 75);
+  --canvas-desk-stroke: oklch(0.62 0.06 70);
+  --canvas-chair: oklch(0.55 0.03 260);
+  --canvas-door: oklch(0.6 0.16 155);
+  --canvas-selection: oklch(0.6 0.2 262);
+  --canvas-violation: oklch(0.63 0.24 25);
+  --canvas-ok: oklch(0.65 0.17 155);
+  --canvas-label: oklch(0.35 0.02 260);
+}
+.dark {
+  --canvas-bg: oklch(0.14 0.01 262);
+  --canvas-grid: oklch(0.24 0.012 262);
+  --canvas-floor: oklch(0.22 0.012 262);
+  --canvas-floor-pattern: oklch(0.25 0.012 262);
+  --canvas-wall: oklch(0.75 0.02 260);
+  --canvas-obstacle: oklch(0.35 0.012 262);
+  --canvas-desk: oklch(0.42 0.04 70);
+  --canvas-desk-stroke: oklch(0.6 0.05 70);
+  --canvas-chair: oklch(0.6 0.02 260);
+  --canvas-door: oklch(0.72 0.15 155);
+  --canvas-selection: oklch(0.72 0.17 262);
+  --canvas-violation: oklch(0.7 0.2 25);
+  --canvas-ok: oklch(0.72 0.15 155);
+  --canvas-label: oklch(0.85 0.01 260);
+}

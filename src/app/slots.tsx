@@ -8,9 +8,7 @@ export function ProjectSwitcherSlot() {
 export function SaveStatusSlot() {
   return null;
 }
-export function UndoRedoSlot() {
-  return null;
-}
+export { UndoRedo as UndoRedoSlot } from "./UndoRedo";
 export function HelpMenuSlot() {
   return null;
 }

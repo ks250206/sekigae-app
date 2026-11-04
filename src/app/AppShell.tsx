@@ -1,5 +1,6 @@
 import { Link, Outlet } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+import { ConfirmHost } from "@/components/ConfirmDialog";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageMenu, ThemeMenu } from "./HeaderMenus";
@@ -41,6 +42,7 @@ export function AppShell() {
         <StepNav variant="bottom" />
       </div>
       <GlobalOverlaysSlot />
+      <ConfirmHost />
       <PwaPrompt />
       <Toaster richColors closeButton position="bottom-right" />
     </TooltipProvider>
