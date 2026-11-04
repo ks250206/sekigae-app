@@ -1,0 +1,149 @@
+/*
+ * キャンバス部品のスタイル。色は index.css の --canvas-* トークンから派生させる。
+ * --sk-u は FloorCanvas が svg に設定する「画面 1px あたりのセル数」。
+ * calc(var(--sk-u) * Npx) で、ズームに依らず画面上 N px の太さ・文字サイズになる。
+ */
+:root {
+  --sk-shadow: oklch(0.3 0.04 260 / 0.16);
+  --sk-floor-tint: 0.07;
+  --sk-highlight: oklch(0.8 0.16 80);
+  --sk-locked: oklch(0.72 0.16 70);
+  --sk-hatch: color-mix(in oklch, var(--canvas-obstacle) 60%, var(--canvas-wall));
+  --sk-obstacle-edge: color-mix(in oklch, var(--canvas-obstacle) 70%, var(--canvas-wall));
+  --sk-chair-back: color-mix(in oklch, var(--canvas-chair) 75%, black);
+  --sk-monitor: color-mix(in oklch, var(--canvas-desk-stroke) 70%, var(--canvas-wall));
+  --sk-halo: var(--canvas-bg);
+}
+.dark {
+  --sk-shadow: oklch(0 0 0 / 0.55);
+  --sk-floor-tint: 0.1;
+  --sk-highlight: oklch(0.85 0.15 85);
+  --sk-locked: oklch(0.8 0.14 75);
+  --sk-chair-back: color-mix(in oklch, var(--canvas-chair) 70%, white);
+}
+
+.sk-canvas {
+  background-color: var(--canvas-bg);
+  background-image: radial-gradient(
+    ellipse at 50% 0%,
+    color-mix(in oklch, var(--canvas-selection) 6%, transparent),
+    transparent 70%
+  );
+}
+.sk-canvas svg {
+  display: block;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  outline: none;
+}
+.sk-canvas svg:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--ring);
+}
+.sk-canvas text {
+  font-family: var(--font-sans);
+  pointer-events: none;
+}
+
+.sk-px1 {
+  stroke-width: calc(var(--sk-u) * 1px);
+}
+.sk-px1-5 {
+  stroke-width: calc(var(--sk-u) * 1.5px);
+}
+.sk-px2 {
+  stroke-width: calc(var(--sk-u) * 2px);
+}
+.sk-px3 {
+  stroke-width: calc(var(--sk-u) * 3px);
+}
+
+/* 部屋 */
+.sk-room-floor {
+  filter: drop-shadow(0 calc(var(--sk-u) * 3px) calc(var(--sk-u) * 6px) var(--sk-shadow));
+}
+.sk-room-outline {
+  transition:
+    opacity 0.18s ease,
+    stroke 0.18s ease;
+}
+.sk-room-header {
+  cursor: grab;
+  transition: filter 0.15s ease;
+}
+.sk-room-header:hover {
+  filter: brightness(1.08) saturate(1.1);
+}
+.sk-room[data-readonly="true"] .sk-room-header {
+  cursor: default;
+}
+.sk-room-dimmed {
+  opacity: 0.45;
+  transition: opacity 0.2s ease;
+}
+.sk-far-label {
+  font-size: calc(var(--sk-u) * 14px);
+  font-weight: 650;
+  paint-order: stroke;
+  stroke: var(--sk-halo);
+  stroke-width: calc(var(--sk-u) * 4px);
+  stroke-linejoin: round;
+}
+
+/* 席 */
+.sk-seat-rot {
+  transform-origin: 0.5px 0.5px;
+  transition: transform 0.24s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+.sk-seat .sk-desk,
+.sk-seat .sk-chair {
+  transition:
+    fill 0.18s ease,
+    stroke 0.18s ease;
+}
+.sk-seat-ring {
+  transition: opacity 0.15s ease;
+}
+.sk-seat-violation {
+  animation: sk-pulse 1.4s ease-in-out infinite;
+}
+@keyframes sk-pulse {
+  0%,
+  100% {
+    opacity: 0.95;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+.sk-seat-highlight {
+  animation: sk-glow 1.6s ease-in-out infinite;
+}
+@keyframes sk-glow {
+  0%,
+  100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+/* ヒートマップ */
+.sk-heat-cell {
+  transition: fill 0.45s ease;
+}
+
+/* プレビュー */
+.sk-ghost {
+  pointer-events: none;
+}
+.sk-marching {
+  stroke-dasharray: calc(var(--sk-u) * 6px) calc(var(--sk-u) * 4px);
+  animation: sk-march 0.8s linear infinite;
+}
+@keyframes sk-march {
+  to {
+    stroke-dashoffset: calc(var(--sk-u) * -10px);
+  }
+}
