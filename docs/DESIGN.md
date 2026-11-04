@@ -34,31 +34,31 @@ flowchart LR
 
 ## 2. 技術スタック
 
-| 領域 | 採用 | 備考 |
-|---|---|---|
-| パッケージ管理 | **pnpm** | |
-| ツールチェーン | **Vite+ (`vite-plus`, `vp`)** | `vp dev / build / test / lint / fmt`。Vite 8 + Vitest + Oxlint + Oxfmt を一括 |
-| UI | **React 19** + TypeScript (strict) | |
-| スタイル | **Tailwind CSS v4** | CSS 変数ベースのテーマトークン |
-| コンポーネント | **shadcn/ui** (Radix) + lucide-react | |
-| ルーティング | TanStack Router (hash history) | 任意の静的ホスティング / PWA で深いリンクを壊さない |
-| 状態管理 | Zustand + immer + persist | |
-| Undo/Redo | zundo | 部屋・名簿・ルール・配置すべて |
-| スキーマ | zod v4 | 保存データ検証・インポート検証・マイグレーション |
-| DnD | dnd-kit | キーボード操作対応 |
-| アニメーション | motion (Framer Motion) | `prefers-reduced-motion` 尊重 |
-| 描画 | **SVG** (React) + 自前 pan/zoom | セル数は高々数千なので Canvas 不要。DOM なので a11y・DnD・テーマ追従が容易 |
-| 表 | TanStack Table | 名簿 |
-| フォーム | react-hook-form + zod | |
-| ソルバー実行 | Web Worker + Comlink | UI を止めない、進捗・キャンセル |
-| i18n | i18next + react-i18next + languagedetector | ja-JP（既定）/ en |
-| XLSX | ExcelJS | セル塗り・罫線・結合など**スタイル付き**出力のため (SheetJS CE はスタイル不可) |
-| PPTX | PptxGenJS | 図形で描く（画像化しない → PowerPoint で編集可能） |
-| 名簿取込 | ExcelJS / Papaparse | XLSX / CSV / Excel からの貼り付け |
-| オンボーディング | driver.js | 軽量、React 非依存 |
-| テスト | Vitest (`vp test`) + Testing Library、Playwright (E2E) | |
-| CI | GitHub Actions | lint / fmt / typecheck / test / build / E2E。v1 ではデプロイしない |
-| PWA | vite-plugin-pwa | **v1 に含める**。オフライン利用・インストール・更新通知 |
+| 領域             | 採用                                                   | 備考                                                                           |
+| ---------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------ |
+| パッケージ管理   | **pnpm**                                               |                                                                                |
+| ツールチェーン   | **Vite+ (`vite-plus`, `vp`)**                          | `vp dev / build / test / lint / fmt`。Vite 8 + Vitest + Oxlint + Oxfmt を一括  |
+| UI               | **React 19** + TypeScript (strict)                     |                                                                                |
+| スタイル         | **Tailwind CSS v4**                                    | CSS 変数ベースのテーマトークン                                                 |
+| コンポーネント   | **shadcn/ui** (Radix) + lucide-react                   |                                                                                |
+| ルーティング     | TanStack Router (hash history)                         | 任意の静的ホスティング / PWA で深いリンクを壊さない                            |
+| 状態管理         | Zustand + immer + persist                              |                                                                                |
+| Undo/Redo        | zundo                                                  | 部屋・名簿・ルール・配置すべて                                                 |
+| スキーマ         | zod v4                                                 | 保存データ検証・インポート検証・マイグレーション                               |
+| DnD              | dnd-kit                                                | キーボード操作対応                                                             |
+| アニメーション   | motion (Framer Motion)                                 | `prefers-reduced-motion` 尊重                                                  |
+| 描画             | **SVG** (React) + 自前 pan/zoom                        | セル数は高々数千なので Canvas 不要。DOM なので a11y・DnD・テーマ追従が容易     |
+| 表               | TanStack Table                                         | 名簿                                                                           |
+| フォーム         | react-hook-form + zod                                  |                                                                                |
+| ソルバー実行     | Web Worker + Comlink                                   | UI を止めない、進捗・キャンセル                                                |
+| i18n             | i18next + react-i18next + languagedetector             | ja-JP（既定）/ en                                                              |
+| XLSX             | ExcelJS                                                | セル塗り・罫線・結合など**スタイル付き**出力のため (SheetJS CE はスタイル不可) |
+| PPTX             | PptxGenJS                                              | 図形で描く（画像化しない → PowerPoint で編集可能）                             |
+| 名簿取込         | ExcelJS / Papaparse                                    | XLSX / CSV / Excel からの貼り付け                                              |
+| オンボーディング | driver.js                                              | 軽量、React 非依存                                                             |
+| テスト           | Vitest (`vp test`) + Testing Library、Playwright (E2E) |                                                                                |
+| CI               | GitHub Actions                                         | lint / fmt / typecheck / test / build / E2E。v1 ではデプロイしない             |
+| PWA              | vite-plugin-pwa                                        | **v1 に含める**。オフライン利用・インストール・更新通知                        |
 
 XLSX / PPTX / 取込ライブラリは **dynamic import** で遅延ロードし、初期バンドルを軽く保つ。
 
@@ -72,70 +72,84 @@ type ID = string; // nanoid
 interface Project {
   schemaVersion: number;
   id: ID;
-  name: string;               // 例: "2026年度 ○○研"
-  createdAt: string; updatedAt: string;
-  labs: Lab[];                // 所属研究室マスタ
+  name: string; // 例: "2026年度 ○○研"
+  createdAt: string;
+  updatedAt: string;
+  labs: Lab[]; // 所属研究室マスタ
   members: Member[];
-  layout: Layout;             // 部屋群
+  layout: Layout; // 部屋群
   rules: Rule[];
-  plans: SeatPlan[];          // 席配置案（今年度の案A/B… と 昨年度）
+  plans: SeatPlan[]; // 席配置案（今年度の案A/B… と 昨年度）
   activePlanId: ID;
-  previousPlanId?: ID;        // 「昨年度」として扱う SeatPlan
-  settings: ProjectSettings;  // 隣接判定(4近傍/8近傍)など
+  previousPlanId?: ID; // 「昨年度」として扱う SeatPlan
+  settings: ProjectSettings; // 隣接判定(4近傍/8近傍)など
 }
 
 interface Lab {
   id: ID;
-  name: string;               // 例: "山田研究室"
-  shortName: string;          // チップ表示用の略称（例: "山田"）。複合研究室ではチップに常時表示
+  name: string; // 例: "山田研究室"
+  shortName: string; // チップ表示用の略称（例: "山田"）。複合研究室ではチップに常時表示
   color: string;
 }
 
-type Gender = 'male' | 'female' | 'other' | 'unspecified';
+type Gender = "male" | "female" | "other" | "unspecified";
 
 type RoleKey =
-  | 'faculty' | 'technician' | 'support'   // 教員 / 技術員 / 支援員
-  | 'pd' | 'd3' | 'd2' | 'd1'
-  | 'wd3' | 'wd2' | 'wd1'                  // 社会人ドクター (社D3 / 社D2 / 社D1)
-  | 'm2' | 'm1' | 'b4' | 'b3'
-  | 'other';
+  | "faculty"
+  | "technician"
+  | "support" // 教員 / 技術員 / 支援員
+  | "pd"
+  | "d3"
+  | "d2"
+  | "d1"
+  | "wd3"
+  | "wd2"
+  | "wd1" // 社会人ドクター (社D3 / 社D2 / 社D1)
+  | "m2"
+  | "m1"
+  | "b4"
+  | "b3"
+  | "other";
 
-type RoleGroup =                           // 役職グループ（セレクタのクイック指定・色系統に使う）
-  | 'staff'          // 教員・技術員・支援員
-  | 'postdoc'        // PD
-  | 'doctor'         // D1〜D3（一般）
-  | 'workingDoctor'  // 社D1〜社D3（一般の D とは別枠）
-  | 'master' | 'bachelor' | 'other';
+type RoleGroup = // 役職グループ（セレクタのクイック指定・色系統に使う）
+  | "staff" // 教員・技術員・支援員
+  | "postdoc" // PD
+  | "doctor" // D1〜D3（一般）
+  | "workingDoctor" // 社D1〜社D3（一般の D とは別枠）
+  | "master"
+  | "bachelor"
+  | "other";
 
 interface Member {
   id: ID;
   name: string;
-  kana?: string;              // ソート用（任意）
+  kana?: string; // ソート用（任意）
   labId?: ID;
   gender: Gender;
   role: RoleKey;
-  tags: string[];             // 任意タグ（例: "留学生", "車椅子"）
+  tags: string[]; // 任意タグ（例: "留学生", "車椅子"）
   note?: string;
 }
 ```
 
 ### 3.1 役職・学年マスタ（固定）
 
-| key | ja | en | rank (シニア度) |
-|---|---|---|---|
-| faculty | 教員 | Faculty | 100 |
-| technician | 技術員 | Technician | 90 |
-| support | 支援員 | Support staff | 85 |
-| pd | PD | Postdoc | 80 |
-| d3 / d2 / d1 | D3 / D2 / D1 | D3 / D2 / D1 | 70 / 65 / 60 |
-| wd3 / wd2 / wd1 | 社D3 / 社D2 / 社D1 | WD3 / WD2 / WD1 (Working doctoral) | 70 / 65 / 60 |
-| m2 / m1 | M2 / M1 | M2 / M1 | 50 / 45 |
-| b4 / b3 | B4 / B3 | B4 / B3 | 30 / 25 |
-| other | その他 | Other | 0（並び順の対象外にもできる） |
+| key             | ja                 | en                                 | rank (シニア度)               |
+| --------------- | ------------------ | ---------------------------------- | ----------------------------- |
+| faculty         | 教員               | Faculty                            | 100                           |
+| technician      | 技術員             | Technician                         | 90                            |
+| support         | 支援員             | Support staff                      | 85                            |
+| pd              | PD                 | Postdoc                            | 80                            |
+| d3 / d2 / d1    | D3 / D2 / D1       | D3 / D2 / D1                       | 70 / 65 / 60                  |
+| wd3 / wd2 / wd1 | 社D3 / 社D2 / 社D1 | WD3 / WD2 / WD1 (Working doctoral) | 70 / 65 / 60                  |
+| m2 / m1         | M2 / M1            | M2 / M1                            | 50 / 45                       |
+| b4 / b3         | B4 / B3            | B4 / B3                            | 30 / 25                       |
+| other           | その他             | Other                              | 0（並び順の対象外にもできる） |
 
 `rank` は「奥ほど上級生」などのプリセット・ルールで使う。色も役職ごとに固定パレット（B3 → 教員で明→濃のグラデーション）。
 
 **社会人ドクター（社D）の扱い**
+
 - 一般の D1〜D3 とは **別の役職**（別枠）。セレクタで「D」を選んでも社 D は含まれず、「社D」グループで別に指定する（両方まとめたい場合は「D または 社D」）。
 - 進級は独立したトラック: 社D1 → 社D2 → 社D3 → 卒業候補（社 D は在籍が延びることが多いため、社D3 で「進級しない（在籍継続）」を選びやすい UI にする）。
 - 来室頻度が低く **席を固定することが多い** ため、「社 D は昨年度と同じ席に固定」をルールテンプレート・年度更新ウィザードのオプションとして用意する。
@@ -154,31 +168,34 @@ interface Layout {
 
 interface Room {
   id: ID;
-  key: ID;                    // 系譜キー。レイアウト複製時も維持（昨年度比較用）
+  key: ID; // 系譜キー。レイアウト複製時も維持（昨年度比較用）
   name: string;
   color: string;
-  position: { x: number; y: number };  // フロア上の位置（セル単位）
-  width: number; height: number;       // セル数（最大 40×40 程度）
-  cells: CellKind[];          // width*height, row-major
+  position: { x: number; y: number }; // フロア上の位置（セル単位）
+  width: number;
+  height: number; // セル数（最大 40×40 程度）
+  cells: CellKind[]; // width*height, row-major
   seats: Seat[];
   entrances: Entrance[];
   note?: string;
 }
 
-type CellKind = 'floor' | 'void' | 'obstacle'; // 床 / 部屋外 / 柱・棚など
+type CellKind = "floor" | "void" | "obstacle"; // 床 / 部屋外 / 柱・棚など
 
 interface Seat {
   id: ID;
-  x: number; y: number;       // 部屋内セル座標
-  facing: 'n' | 'e' | 's' | 'w';  // 机の向き（描画用）
-  label: string;              // 自動採番 "A-01" 等、手動変更可
-  tags: string[];             // "窓側" など。ルールのセル集合指定に使える
+  x: number;
+  y: number; // 部屋内セル座標
+  facing: "n" | "e" | "s" | "w"; // 机の向き（描画用）
+  label: string; // 自動採番 "A-01" 等、手動変更可
+  tags: string[]; // "窓側" など。ルールのセル集合指定に使える
 }
 
 interface Entrance {
   id: ID;
-  x: number; y: number;       // 外周セル
-  side: 'n' | 'e' | 's' | 'w';
+  x: number;
+  y: number; // 外周セル
+  side: "n" | "e" | "s" | "w";
 }
 ```
 
@@ -193,12 +210,12 @@ interface Entrance {
 ```ts
 interface SeatPlan {
   id: ID;
-  name: string;               // "案A", "2025年度" など
-  kind: 'current' | 'previous';
-  assignment: Record<SeatID, MemberID>;   // 席 → 人
-  roomOnly: Record<MemberID, RoomKey>;    // 昨年度: 席は不明だが部屋は分かる場合
-  locks: SeatID[];            // 微調整で固定した席（再シャッフル対象外）
-  seed?: number;              // 生成に使った乱数シード
+  name: string; // "案A", "2025年度" など
+  kind: "current" | "previous";
+  assignment: Record<SeatID, MemberID>; // 席 → 人
+  roomOnly: Record<MemberID, RoomKey>; // 昨年度: 席は不明だが部屋は分かる場合
+  locks: SeatID[]; // 微調整で固定した席（再シャッフル対象外）
+  seed?: number; // 生成に使った乱数シード
   createdAt: string;
 }
 ```
@@ -237,29 +254,30 @@ Blockly のような汎用プログラミングではなく、**「文章にな�
 
 ```ts
 type PersonExpr =
-  | { op: 'all' }
-  | { op: 'members'; ids: ID[] }                       // 個人指定
-  | { op: 'role'; in: RoleKey[] }                       // 同一属性内の複数選択は「または」
-  | { op: 'roleGroup'; in: RoleGroup[] }                // 例: 学生全員, 博士課程, 社D, スタッフ
-  | { op: 'lab'; in: ID[] }
-  | { op: 'gender'; in: Gender[] }
-  | { op: 'tag'; in: string[] }
-  | { op: 'and'; args: PersonExpr[] }
-  | { op: 'or'; args: PersonExpr[] }
-  | { op: 'not'; arg: PersonExpr };
+  | { op: "all" }
+  | { op: "members"; ids: ID[] } // 個人指定
+  | { op: "role"; in: RoleKey[] } // 同一属性内の複数選択は「または」
+  | { op: "roleGroup"; in: RoleGroup[] } // 例: 学生全員, 博士課程, 社D, スタッフ
+  | { op: "lab"; in: ID[] }
+  | { op: "gender"; in: Gender[] }
+  | { op: "tag"; in: string[] }
+  | { op: "and"; args: PersonExpr[] }
+  | { op: "or"; args: PersonExpr[] }
+  | { op: "not"; arg: PersonExpr };
 
 type SeatExpr =
-  | { op: 'all' }
-  | { op: 'rooms'; roomIds: ID[] }
-  | { op: 'seats'; seatIds: ID[] }
-  | { op: 'seatTag'; in: string[] }
-  | { op: 'depth'; roomIds: ID[]; from: 'back' | 'front'; count?: number; ratio?: number }
-  | { op: 'and'; args: SeatExpr[] }
-  | { op: 'or'; args: SeatExpr[] }
-  | { op: 'not'; arg: SeatExpr };
+  | { op: "all" }
+  | { op: "rooms"; roomIds: ID[] }
+  | { op: "seats"; seatIds: ID[] }
+  | { op: "seatTag"; in: string[] }
+  | { op: "depth"; roomIds: ID[]; from: "back" | "front"; count?: number; ratio?: number }
+  | { op: "and"; args: SeatExpr[] }
+  | { op: "or"; args: SeatExpr[] }
+  | { op: "not"; arg: SeatExpr };
 ```
 
 **UI（条件ビルダー）**
+
 - 単純なケース（1 種類の属性の複数選択）はこれまで通りピルのマルチセレクトで完結（例: 役職 = D1, D2, D3, M2 → 内部的には `role in [...]` = 「または」）。
 - 「条件を追加」で 2 つ目以降の条件を足すと、条件間の **かつ / または** を切り替えられる。条件の左に「でない」トグル。
 - 入れ子は「グループ化」で 1 段のカッコを作る（v1 は深さ 2 まで、UI 上は Scratch 風の C 型ブロック）。
@@ -268,51 +286,53 @@ type SeatExpr =
 
 ### 4.3 ブロック一覧（v1）
 
-| カテゴリ | ブロック (type) | 文例 |
-|---|---|---|
-| 部屋 | `room.only` | [部屋] は [人集合] **のみ** |
-| 部屋 | `room.prefer` | [部屋] には [人集合] を **多めに**（soft 専用） |
-| 部屋 | `room.count` | [部屋] の [人集合] は [≥/≤/=] [n 人 / n %] |
-| 部屋 | `room.exclude` | [部屋] には [人集合] を入れない |
-| 部屋 | `room.diversity` | [部屋] には [研究室 / 役職] が [n] 種類以上 **混ざる** |
-| 部屋 | `room.attrCap` | [部屋] では同じ [研究室 / 役職 / 性別] の人は [n 人 / n %] **以下** |
-| 席 | `seat.only` | [席集合] は [人集合] **のみ**（役職・学年制限） |
-| 席 | `seat.pin` | [席] に [人] を **あらかじめ入れておく** |
-| 席 | `seat.empty` | [席集合] は空席にする |
-| 人 | `person.pin` | [人] は [席 / 部屋] に固定 |
-| 人 | `person.avoid` | [人] は [席集合] にしない |
-| 人 | `pair.relation` | [人集合A] と [人集合B] は [(同じ研究室同士なら / 別の研究室同士なら / 同じ役職同士なら)] [同じ部屋 / 別の部屋 / 隣 / 隣にしない] |
-| 全体 | `prev.different` | [人集合] は昨年度と [別の部屋 / 別の席] |
-| 全体 | `prev.same` | [人集合] は昨年度と [同じ部屋 / 同じ席] |
-| 全体 | `group.cluster` | [人集合] を [研究室 / 役職] ごとに **まとめる** |
-| 全体 | `group.spread` | [人集合] を [研究室 / 役職 / 性別] で部屋間に **分散** |
-| 全体 | `depth.order` | [人集合] は [役職] が上がるほど [奥 / 入口側] |
-| 全体 | `group.mixAdjacent` | [人集合] は隣の人と [研究室 / 役職] が **異なる** ようにする |
-| 全体 | `group.buddy` | [人集合A] の [同じ部屋 / 隣] に、**同じ研究室の** [人集合B] が [n] 人以上いる |
-| 全体 | `group.labBalance` | 各部屋の研究室構成を全体の比率に **近づける** |
-| 論理 | `logic.any` | 次の **いずれか** を満たす: [ルール…]（C 型ブロックに子ルールを入れる） |
-| 論理 | `logic.all` | 次の **すべて** を満たす: [ルール…]（グループ化・一括で必須/できれば切替） |
-| 論理 | `logic.ifThen` | **もし** [ルール] **なら** [ルール] |
+| カテゴリ | ブロック (type)     | 文例                                                                                                                             |
+| -------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| 部屋     | `room.only`         | [部屋] は [人集合] **のみ**                                                                                                      |
+| 部屋     | `room.prefer`       | [部屋] には [人集合] を **多めに**（soft 専用）                                                                                  |
+| 部屋     | `room.count`        | [部屋] の [人集合] は [≥/≤/=] [n 人 / n %]                                                                                       |
+| 部屋     | `room.exclude`      | [部屋] には [人集合] を入れない                                                                                                  |
+| 部屋     | `room.diversity`    | [部屋] には [研究室 / 役職] が [n] 種類以上 **混ざる**                                                                           |
+| 部屋     | `room.attrCap`      | [部屋] では同じ [研究室 / 役職 / 性別] の人は [n 人 / n %] **以下**                                                              |
+| 席       | `seat.only`         | [席集合] は [人集合] **のみ**（役職・学年制限）                                                                                  |
+| 席       | `seat.pin`          | [席] に [人] を **あらかじめ入れておく**                                                                                         |
+| 席       | `seat.empty`        | [席集合] は空席にする                                                                                                            |
+| 人       | `person.pin`        | [人] は [席 / 部屋] に固定                                                                                                       |
+| 人       | `person.avoid`      | [人] は [席集合] にしない                                                                                                        |
+| 人       | `pair.relation`     | [人集合A] と [人集合B] は [(同じ研究室同士なら / 別の研究室同士なら / 同じ役職同士なら)] [同じ部屋 / 別の部屋 / 隣 / 隣にしない] |
+| 全体     | `prev.different`    | [人集合] は昨年度と [別の部屋 / 別の席]                                                                                          |
+| 全体     | `prev.same`         | [人集合] は昨年度と [同じ部屋 / 同じ席]                                                                                          |
+| 全体     | `group.cluster`     | [人集合] を [研究室 / 役職] ごとに **まとめる**                                                                                  |
+| 全体     | `group.spread`      | [人集合] を [研究室 / 役職 / 性別] で部屋間に **分散**                                                                           |
+| 全体     | `depth.order`       | [人集合] は [役職] が上がるほど [奥 / 入口側]                                                                                    |
+| 全体     | `group.mixAdjacent` | [人集合] は隣の人と [研究室 / 役職] が **異なる** ようにする                                                                     |
+| 全体     | `group.buddy`       | [人集合A] の [同じ部屋 / 隣] に、**同じ研究室の** [人集合B] が [n] 人以上いる                                                    |
+| 全体     | `group.labBalance`  | 各部屋の研究室構成を全体の比率に **近づける**                                                                                    |
+| 論理     | `logic.any`         | 次の **いずれか** を満たす: [ルール…]（C 型ブロックに子ルールを入れる）                                                          |
+| 論理     | `logic.all`         | 次の **すべて** を満たす: [ルール…]（グループ化・一括で必須/できれば切替）                                                       |
+| 論理     | `logic.ifThen`      | **もし** [ルール] **なら** [ルール]                                                                                              |
 
 ```ts
 interface Rule {
   id: ID;
   enabled: boolean;
-  strength: 'hard' | 'soft';
-  weight: 1 | 2 | 3 | 4 | 5;  // soft のみ有効
-  block: RuleBlock;           // 上表の判別共用体
+  strength: "hard" | "soft";
+  weight: 1 | 2 | 3 | 4 | 5; // soft のみ有効
+  block: RuleBlock; // 上表の判別共用体
   note?: string;
-  origin?: 'user' | 'preset' | 'contextMenu' | 'template';
+  origin?: "user" | "preset" | "contextMenu" | "template";
 }
 ```
 
 **複合研究室向けブロックの補足**
+
 - `pair.relation` の修飾は `qualifier?: { lab?: 'same' | 'different'; role?: 'same' | 'different' }`。A × B の組のうち条件に合う組だけに適用する（例:「学生と学生は、同じ研究室 かつ 同じ役職同士なら隣にしない」）。
 - `room.diversity` / `room.attrCap` / `group.labBalance` / `group.mixAdjacent` で「研究室が偏らない・混ざる」を表現する。
 - `group.buddy` で「各研究室の M1・B4 の同じ部屋に、同じ研究室の D か教員を 1 人以上」のような面倒見の配置を表現する。
 - `group.cluster`（研究室ごとにまとめる）も残すので、混ぜる / まとめるの両方針を選べる。
 
 **論理ブロックの補足**
+
 - 子ルールの強さ（必須 / できれば）は親の論理ブロックが持つ。子は条件としてのみ評価される。
 - `logic.ifThen` の条件側は「違反 0 = 成立」として真偽判定する。
 - 論理ブロックの中の子ルールは単項制約による事前絞り込み（§5）の対象外で、最適化フェーズで評価する。
@@ -326,7 +346,11 @@ interface RuleEvaluator<B> {
   // 単項制約 (席ドメインの絞り込み) を返せるものは返す
   unaryDomain?(block: B, ctx): Map<MemberID, Set<SeatID>> | null;
   // 違反量 (0 = 満たす)。差分計算用に影響する人/席も返す
-  evaluate(block: B, assignment, ctx): { violation: number; culprits: { members: ID[]; seats: ID[] } };
+  evaluate(
+    block: B,
+    assignment,
+    ctx,
+  ): { violation: number; culprits: { members: ID[]; seats: ID[] } };
 }
 ```
 
@@ -337,16 +361,16 @@ interface RuleEvaluator<B> {
 
 パレット上部に「テンプレート」タブを設け、ワンクリックで組み合わせ済みのルールを追加する。
 
-| テンプレート | 中身 |
-|---|---|
-| 社 D は昨年度の席に固定 | `prev.same(席)` 必須, 対象 = 社D |
-| 各部屋に 3 研究室以上混ぜる | `room.diversity(研究室, 3)` できれば, 対象 = 学生の居室 |
-| 1 部屋の同じ研究室は半分以下 | `room.attrCap(研究室, 50%)` できれば |
+| テンプレート                   | 中身                                                                          |
+| ------------------------------ | ----------------------------------------------------------------------------- |
+| 社 D は昨年度の席に固定        | `prev.same(席)` 必須, 対象 = 社D                                              |
+| 各部屋に 3 研究室以上混ぜる    | `room.diversity(研究室, 3)` できれば, 対象 = 学生の居室                       |
+| 1 部屋の同じ研究室は半分以下   | `room.attrCap(研究室, 50%)` できれば                                          |
 | 同じ研究室の同学年は隣にしない | `pair.relation(学生, 学生, 同じ研究室同士 かつ 同じ役職同士なら, 隣にしない)` |
-| 新入生の近くに同じ研究室の先輩 | `group.buddy(M1 または B4, D または 社D または 教員, 同じ部屋, 1)` |
-| 隣は別の研究室 | `group.mixAdjacent(研究室)` できれば |
-| 教員室は教員のみ | `room.only(教員室, 教員)` 必須 |
-| 昨年度と別の部屋（学生） | `prev.different(部屋)` できれば, 対象 = 学生 かつ 社D でない |
+| 新入生の近くに同じ研究室の先輩 | `group.buddy(M1 または B4, D または 社D または 教員, 同じ部屋, 1)`            |
+| 隣は別の研究室                 | `group.mixAdjacent(研究室)` できれば                                          |
+| 教員室は教員のみ               | `room.only(教員室, 教員)` 必須                                                |
+| 昨年度と別の部屋（学生）       | `prev.different(部屋)` できれば, 対象 = 学生 かつ 社D でない                  |
 
 ---
 
@@ -378,18 +402,18 @@ interface RuleEvaluator<B> {
 
 プリセット = **「ソフト目的関数のテンプレート」**。プリセット同士は組み合わせ可能（例: 研究室ミックス + 奥ほど上級生）。クリックするとソルバーを実行して即反映（hard ルールは尊重）、その後自由に手で編集できる。
 
-| プリセット | 内容 |
-|---|---|
-| 奥ほど上級生 | depth と role rank の順位相関を最大化 |
-| 入口側ほど上級生 | 上の逆 |
-| 研究室ごとにまとめる | 同研究室を同じ部屋・隣接に |
-| 学年ごとにまとめる | 同役職を隣接に |
-| 学年ミックス | 隣接する人の役職が異なるほど良い |
-| **研究室ミックス** | 各部屋の研究室構成を全体比率に近づけ、隣接する人の研究室が異なるほど良い（複合研究室向けの既定おすすめ） |
-| 昨年度を維持 | 昨年度と同じ席を最大化 |
-| 全員お引越し | 昨年度と別の部屋を最大化 |
-| 名前順 | 席ラベル順に五十音（kana）順 |
-| 完全ランダム | 目的関数なし（hard のみ） |
+| プリセット           | 内容                                                                                                     |
+| -------------------- | -------------------------------------------------------------------------------------------------------- |
+| 奥ほど上級生         | depth と role rank の順位相関を最大化                                                                    |
+| 入口側ほど上級生     | 上の逆                                                                                                   |
+| 研究室ごとにまとめる | 同研究室を同じ部屋・隣接に                                                                               |
+| 学年ごとにまとめる   | 同役職を隣接に                                                                                           |
+| 学年ミックス         | 隣接する人の役職が異なるほど良い                                                                         |
+| **研究室ミックス**   | 各部屋の研究室構成を全体比率に近づけ、隣接する人の研究室が異なるほど良い（複合研究室向けの既定おすすめ） |
+| 昨年度を維持         | 昨年度と同じ席を最大化                                                                                   |
+| 全員お引越し         | 昨年度と別の部屋を最大化                                                                                 |
+| 名前順               | 席ラベル順に五十音（kana）順                                                                             |
+| 完全ランダム         | 目的関数なし（hard のみ）                                                                                |
 
 - プリセットはサムネイル付きカードのギャラリーで提示（ホバーで実際の部屋に対するプレビュー）。
 - プリセットを「ルールとして保存」すると `depth.order` 等の soft ルールとしてルール一覧に追加される。
@@ -526,34 +550,34 @@ tests/e2e/        # Playwright
 
 ## 12. 決定事項
 
-| # | 論点 | 決定 |
-|---|---|---|
-| 1 | ルールエディタ | **自作の「文章ブロック」UI**（Blockly は使わない） |
-| 2 | 昨年度と今年度でレイアウトが変わるケース | v1 は同一レイアウト前提。別レイアウト対応は拡張（`Room.key` は v1 から保持） |
-| 3 | 性別 | 男性 / 女性 / その他 / 未回答。ルール・色分けに利用可 |
-| 4 | 配置案の複数保持・比較 | **v1 に含める**（比較 UI も含む） |
-| 5 | 公開・PWA | **v1 では公開・デプロイしない**。**PWA（オフライン）は v1 に含める** |
-| 6 | スマホ対応 | 閲覧のみ |
-| 7 | 社会人ドクター | 役職 `wd1〜wd3`（社D1〜社D3）を追加。D とは別枠・別の進級トラック。席固定のテンプレートを用意 |
-| 8 | 複合研究室 | 主対象とする。研究室略称・部屋ごとの研究室構成表示、研究室ミックス系ブロック（`room.diversity` / `room.attrCap` / `group.mixAdjacent` / `group.buddy` / `group.labBalance` / `pair.relation` の研究室修飾）とプリセット「研究室ミックス」 |
-| 9 | 複雑なルール | 人集合・席集合は条件式（かつ / または / でない、深さ 2）。ルール同士は論理ブロック（いずれか / すべて / もし〜なら） |
+| #   | 論点                                     | 決定                                                                                                                                                                                                                                      |
+| --- | ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | ルールエディタ                           | **自作の「文章ブロック」UI**（Blockly は使わない）                                                                                                                                                                                        |
+| 2   | 昨年度と今年度でレイアウトが変わるケース | v1 は同一レイアウト前提。別レイアウト対応は拡張（`Room.key` は v1 から保持）                                                                                                                                                              |
+| 3   | 性別                                     | 男性 / 女性 / その他 / 未回答。ルール・色分けに利用可                                                                                                                                                                                     |
+| 4   | 配置案の複数保持・比較                   | **v1 に含める**（比較 UI も含む）                                                                                                                                                                                                         |
+| 5   | 公開・PWA                                | **v1 では公開・デプロイしない**。**PWA（オフライン）は v1 に含める**                                                                                                                                                                      |
+| 6   | スマホ対応                               | 閲覧のみ                                                                                                                                                                                                                                  |
+| 7   | 社会人ドクター                           | 役職 `wd1〜wd3`（社D1〜社D3）を追加。D とは別枠・別の進級トラック。席固定のテンプレートを用意                                                                                                                                             |
+| 8   | 複合研究室                               | 主対象とする。研究室略称・部屋ごとの研究室構成表示、研究室ミックス系ブロック（`room.diversity` / `room.attrCap` / `group.mixAdjacent` / `group.buddy` / `group.labBalance` / `pair.relation` の研究室修飾）とプリセット「研究室ミックス」 |
+| 9   | 複雑なルール                             | 人集合・席集合は条件式（かつ / または / でない、深さ 2）。ルール同士は論理ブロック（いずれか / すべて / もし〜なら）                                                                                                                      |
 
 ## 13. Issue 分解方針
 
 Epic（親 Issue）ごとに、1 PR で完結する粒度の sub-issue を作成する。
 
-| # | Epic | 主な sub-issue |
-|---|---|---|
-| E0 | プロジェクト基盤 | Vite+ 雛形 / Tailwind+shadcn / lint・fmt・test / CI / AppShell・ルーティング / Playwright / PWA |
-| E1 | ドメインモデル・状態管理 | 型+zod / 役職マスタ / store slices / undo-redo / RNG・ID / depth BFS / 隣接計算 |
-| E2 | 永続化 | storage adapter / マイグレーション / 自動保存+状態表示 / 複数プロジェクト / JSON 入出力 / 部分入出力 / エラー復旧 / 複数タブ |
-| E3 | テーマ・i18n | ThemeProvider / キャンバスカラートークン / i18next 基盤 / 言語切替 / ja・en 辞書 / キー差分 CI |
-| E4 | 部屋エディタ | キャンバス pan/zoom / 部屋 CRUD / 移動・リサイズ / セルペイント / 席配置・向き・採番 / 入口 / 選択・コピペ / テンプレート / インスペクタ / ヒートマップ / ショートカット / SVG アート |
-| E5 | 名簿 | テーブル / 追加編集フォーム / インライン編集 / 研究室マスタ（略称・構成） / 一括編集 / CSV・XLSX 取込 / 貼り付け取込 / 表記ゆれ正規化（社D 含む） |
-| E6 | 昨年度席・年度更新 | 昨年度プラン / リストから入力 / 部屋ビューから入力 / 部屋のみ指定 / 差分表示 / 年度更新ウィザード |
-| E7 | ルールエディタ | ブロック基盤 UI / スロット (人・席・部屋・数値) / 条件ビルダー (かつ・または・でない) / パレット+DnD / 共通設定 (hard/soft/重み/有効) / ブロック種別ごと実装 / 複合研究室ブロック / 論理ブロック / テンプレート / 右クリック作成 / 参照切れ検知 / 自然文サマリー |
-| E8 | 配置エンジン | 条件式コンパイル / ルール評価器（複合研究室・論理ブロック含む） / 正規化 / 実行可能性チェック+理由提示 / 初期解 / 焼きなまし / ロック・部分再配置 / Worker+進捗・キャンセル / テスト・ベンチ |
-| E9 | 席配置ビュー | チップ描画（研究室略称） / 部屋ごとの研究室構成バー / 未配置トレイ / DnD 移動・入替 / キーボード操作 / ロック / シャッフル+アニメ / 違反パネル+ハイライト / 色分け+凡例 / ホバーカード / プリセットギャラリー / 各プリセット / 配置案管理 / 配置案比較 / スマホ閲覧 |
-| E10 | 出力 | 出力ダイアログ / XLSX 座席表 / XLSX 名簿・部屋別 / PPTX 部屋スライド / PPTX 全体図・表紙 / フォント・遅延ロード / (任意) PNG・印刷 |
-| E11 | オンボーディング | ウェルカム / サンプルデータ / ガイドツアー / 空状態 / ヘルプ・ショートカット |
-| E12 | 品質・リリース | a11y 監査 / E2E シナリオ / パフォーマンス計測 / README・プライバシー表記 |
+| #   | Epic                     | 主な sub-issue                                                                                                                                                                                                                                                      |
+| --- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| E0  | プロジェクト基盤         | Vite+ 雛形 / Tailwind+shadcn / lint・fmt・test / CI / AppShell・ルーティング / Playwright / PWA                                                                                                                                                                     |
+| E1  | ドメインモデル・状態管理 | 型+zod / 役職マスタ / store slices / undo-redo / RNG・ID / depth BFS / 隣接計算                                                                                                                                                                                     |
+| E2  | 永続化                   | storage adapter / マイグレーション / 自動保存+状態表示 / 複数プロジェクト / JSON 入出力 / 部分入出力 / エラー復旧 / 複数タブ                                                                                                                                        |
+| E3  | テーマ・i18n             | ThemeProvider / キャンバスカラートークン / i18next 基盤 / 言語切替 / ja・en 辞書 / キー差分 CI                                                                                                                                                                      |
+| E4  | 部屋エディタ             | キャンバス pan/zoom / 部屋 CRUD / 移動・リサイズ / セルペイント / 席配置・向き・採番 / 入口 / 選択・コピペ / テンプレート / インスペクタ / ヒートマップ / ショートカット / SVG アート                                                                               |
+| E5  | 名簿                     | テーブル / 追加編集フォーム / インライン編集 / 研究室マスタ（略称・構成） / 一括編集 / CSV・XLSX 取込 / 貼り付け取込 / 表記ゆれ正規化（社D 含む）                                                                                                                   |
+| E6  | 昨年度席・年度更新       | 昨年度プラン / リストから入力 / 部屋ビューから入力 / 部屋のみ指定 / 差分表示 / 年度更新ウィザード                                                                                                                                                                   |
+| E7  | ルールエディタ           | ブロック基盤 UI / スロット (人・席・部屋・数値) / 条件ビルダー (かつ・または・でない) / パレット+DnD / 共通設定 (hard/soft/重み/有効) / ブロック種別ごと実装 / 複合研究室ブロック / 論理ブロック / テンプレート / 右クリック作成 / 参照切れ検知 / 自然文サマリー    |
+| E8  | 配置エンジン             | 条件式コンパイル / ルール評価器（複合研究室・論理ブロック含む） / 正規化 / 実行可能性チェック+理由提示 / 初期解 / 焼きなまし / ロック・部分再配置 / Worker+進捗・キャンセル / テスト・ベンチ                                                                        |
+| E9  | 席配置ビュー             | チップ描画（研究室略称） / 部屋ごとの研究室構成バー / 未配置トレイ / DnD 移動・入替 / キーボード操作 / ロック / シャッフル+アニメ / 違反パネル+ハイライト / 色分け+凡例 / ホバーカード / プリセットギャラリー / 各プリセット / 配置案管理 / 配置案比較 / スマホ閲覧 |
+| E10 | 出力                     | 出力ダイアログ / XLSX 座席表 / XLSX 名簿・部屋別 / PPTX 部屋スライド / PPTX 全体図・表紙 / フォント・遅延ロード / (任意) PNG・印刷                                                                                                                                  |
+| E11 | オンボーディング         | ウェルカム / サンプルデータ / ガイドツアー / 空状態 / ヘルプ・ショートカット                                                                                                                                                                                        |
+| E12 | 品質・リリース           | a11y 監査 / E2E シナリオ / パフォーマンス計測 / README・プライバシー表記                                                                                                                                                                                            |

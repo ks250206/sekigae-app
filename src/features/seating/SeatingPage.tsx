@@ -1,0 +1,11 @@
+import { useTranslation } from "react-i18next";
+import { PageHeader } from "@/components/PageHeader";
+
+export default function SeatingPage() {
+  const { t } = useTranslation("seating");
+  return (
+    <div className="flex h-full flex-col">
+      <PageHeader title={t("title")} description={t("description")} />
+    </div>
+  );
+}

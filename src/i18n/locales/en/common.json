@@ -1,0 +1,138 @@
+{
+  "app": {
+    "name": "Sekigae",
+    "tagline": "Lab seat planner"
+  },
+  "steps": {
+    "rooms": "Rooms",
+    "members": "Members",
+    "rules": "Rules",
+    "seating": "Seating",
+    "export": "Export"
+  },
+  "header": {
+    "undo": "Undo",
+    "redo": "Redo",
+    "theme": "Theme",
+    "language": "Language",
+    "help": "Help",
+    "project": "Project"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "language": {
+    "ja": "日本語",
+    "en": "English"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "duplicate": "Duplicate",
+    "rename": "Rename",
+    "add": "Add",
+    "edit": "Edit",
+    "close": "Close",
+    "confirm": "Confirm",
+    "ok": "OK",
+    "reset": "Reset",
+    "import": "Import",
+    "export": "Export",
+    "undo": "Undo",
+    "reload": "Reload",
+    "back": "Back",
+    "next": "Next",
+    "done": "Done",
+    "search": "Search",
+    "clear": "Clear",
+    "apply": "Apply",
+    "more": "More"
+  },
+  "save": {
+    "saved": "Saved",
+    "saving": "Saving…",
+    "failed": "Failed to save",
+    "retry": "Retry",
+    "savedAt": "Saved at {{time}}"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "description": "An unexpected error occurred. Your data is stored in this browser.",
+    "reload": "Reload",
+    "downloadBackup": "Download data as JSON",
+    "details": "Details"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "back": "Back to start"
+  },
+  "pwa": {
+    "updateAvailable": "A new version is available",
+    "update": "Update",
+    "offlineReady": "Ready to work offline"
+  },
+  "confirm": {
+    "title": "Confirm",
+    "deleteTitle": "Delete this?",
+    "irreversible": "You may be able to undo this (Ctrl+Z)."
+  },
+  "roles": {
+    "faculty": "Faculty",
+    "technician": "Technician",
+    "support": "Support",
+    "pd": "PD",
+    "d3": "D3",
+    "d2": "D2",
+    "d1": "D1",
+    "wd3": "WD3",
+    "wd2": "WD2",
+    "wd1": "WD1",
+    "m2": "M2",
+    "m1": "M1",
+    "b4": "B4",
+    "b3": "B3",
+    "other": "Other"
+  },
+  "rolesLong": {
+    "faculty": "Faculty",
+    "technician": "Technician",
+    "support": "Support staff",
+    "pd": "Postdoc (PD)",
+    "d3": "Doctoral year 3 (D3)",
+    "d2": "Doctoral year 2 (D2)",
+    "d1": "Doctoral year 1 (D1)",
+    "wd3": "Working doctoral year 3 (WD3)",
+    "wd2": "Working doctoral year 2 (WD2)",
+    "wd1": "Working doctoral year 1 (WD1)",
+    "m2": "Master's year 2 (M2)",
+    "m1": "Master's year 1 (M1)",
+    "b4": "Undergraduate year 4 (B4)",
+    "b3": "Undergraduate year 3 (B3)",
+    "other": "Other"
+  },
+  "roleGroups": {
+    "staff": "Staff",
+    "postdoc": "Postdoc",
+    "doctor": "Doctoral (D)",
+    "workingDoctor": "Working doctoral",
+    "master": "Master's",
+    "bachelor": "Undergraduate",
+    "other": "Other",
+    "students": "All students"
+  },
+  "genders": {
+    "male": "Male",
+    "female": "Female",
+    "other": "Other",
+    "unspecified": "Prefer not to say"
+  },
+  "mobile": {
+    "viewOnly": "View-only on phones. Please edit on a computer."
+  },
+  "empty": {
+    "nothing": "Nothing here yet"
+  }
+}
