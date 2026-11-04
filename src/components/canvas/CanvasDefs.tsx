@@ -1,12 +1,5 @@
 import { memo } from "react";
-
-/** 共有パターン ID（同一ページに複数キャンバスがあっても中身が同じなので衝突しない） */
-export const DEF = {
-  floor: "sk-floor-tex",
-  hatch: "sk-obstacle-hatch",
-  void: "sk-void-hatch",
-} as const;
-export const defUrl = (id: string) => `url(#${id})`;
+import { DEF } from "./defs";
 
 /** パターン・グラデーション定義。FloorCanvas が 1 度だけ描画する */
 export const CanvasDefs = memo(function CanvasDefs() {

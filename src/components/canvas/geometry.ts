@@ -9,7 +9,10 @@ const kindAt = (r: Pick<Room, "width" | "height" | "cells">, x: number, y: numbe
   x < 0 || y < 0 || x >= r.width || y >= r.height ? "void" : (r.cells[y * r.width + x] ?? "void");
 
 /** 指定種別のセルを行ごとの連続区間にまとめた矩形パス */
-export function cellsPath(r: Pick<Room, "width" | "height" | "cells">, match: (k: CellKind) => boolean) {
+export function cellsPath(
+  r: Pick<Room, "width" | "height" | "cells">,
+  match: (k: CellKind) => boolean,
+) {
   let d = "";
   for (let y = 0; y < r.height; y++) {
     let x = 0;
@@ -90,19 +93,21 @@ export const FACING_ANGLE: Record<Facing, number> = { n: 0, e: 90, s: 180, w: 27
 
 /** 机の中心（セル内ローカル）。ラベル配置に使う */
 export const DESK_CENTER: Record<Facing, { x: number; y: number }> = {
-  n: { x: 0.5, y: 0.3 },
-  e: { x: 0.7, y: 0.5 },
-  s: { x: 0.5, y: 0.7 },
-  w: { x: 0.3, y: 0.5 },
+  n: { x: 0.5, y: 0.33 },
+  e: { x: 0.67, y: 0.5 },
+  s: { x: 0.5, y: 0.67 },
+  w: { x: 0.33, y: 0.5 },
 };
+
+/** 1 文字の概算幅（全角 = 1、半角 = 0.6） */
+const charWidth = (c: string) => ((c.codePointAt(0) ?? 0) < 0x100 ? 0.6 : 1);
 
 /** SVG にはテキスト省略が無いので、幅（セル単位）に収まるよう概算で切り詰める */
 export function fitText(text: string, maxWidth: number, fontSize: number): string {
-  const w = (c: string) => (/[\u0000-ÿ]/.test(c) ? 0.6 : 1) * fontSize;
   let total = 0;
-  const chars = [...text];
+  const chars = Array.from(text);
   for (let i = 0; i < chars.length; i++) {
-    total += w(chars[i]!);
+    total += charWidth(chars[i]!) * fontSize;
     if (total > maxWidth) return chars.slice(0, Math.max(0, i - 1)).join("") + "…";
   }
   return text;
@@ -110,4 +115,4 @@ export function fitText(text: string, maxWidth: number, fontSize: number): strin
 
 /** 文字列の概算幅（セル単位） */
 export const textWidth = (text: string, fontSize: number) =>
-  [...text].reduce((n, c) => n + (/[\u0000-ÿ]/.test(c) ? 0.6 : 1) * fontSize, 0);
+  Array.from(text).reduce((n, c) => n + charWidth(c) * fontSize, 0);

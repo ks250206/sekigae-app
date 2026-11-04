@@ -9,7 +9,7 @@
 import { memo, useMemo, type ReactNode } from "react";
 import type { ID, Room, Seat } from "@/domain/schema";
 import { readableText } from "@/graphics/palette";
-import { defUrl, DEF } from "./CanvasDefs";
+import { defUrl, DEF } from "./defs";
 import { useLod } from "./context";
 import { DoorGlyph } from "./DoorGlyph";
 import { cellsPath, fitText, floorPath, ROOM_HEADER, textWidth, wallPath } from "./geometry";
@@ -248,9 +248,9 @@ const RoomHeader = memo(function RoomHeader({
         x={0.25}
         y={-h / 2}
         dominantBaseline="central"
-        fontSize={fs}
         fontWeight={650}
         fill={fg}
+        style={{ fontSize: `min(${fs}px, calc(var(--sk-u) * 15px))` }}
       >
         {fitText(name, nameW, fs)}
       </text>
@@ -260,8 +260,8 @@ const RoomHeader = memo(function RoomHeader({
           y={-h / 2}
           textAnchor="end"
           dominantBaseline="central"
-          fontSize={0.3}
           fontWeight={500}
+          style={{ fontSize: "min(0.3px, calc(var(--sk-u) * 12px))" }}
           fill={fg}
           opacity={0.85}
         >
@@ -270,11 +270,15 @@ const RoomHeader = memo(function RoomHeader({
       )}
       {alert && (
         <g transform={`translate(${width - 0.25 - badgeW - 0.22} ${-h / 2})`}>
-          <path d="M0 -0.2L0.2 0.16H-0.2Z" fill="var(--canvas-floor)" stroke={fg} strokeWidth={0.03} />
+          <path
+            d="M0 -0.2L0.2 0.16H-0.2Z"
+            fill="var(--canvas-floor)"
+            stroke={fg}
+            strokeWidth={0.03}
+          />
           <path d="M0 -0.07V0.04M0 0.09V0.1" stroke="var(--canvas-violation)" strokeWidth={0.05} />
         </g>
       )}
     </g>
   );
 });
-

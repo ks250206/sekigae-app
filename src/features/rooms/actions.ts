@@ -5,6 +5,7 @@
 import { toast } from "sonner";
 import { confirm } from "@/components/confirm";
 import type { CellKind, Facing, ID, Room, Seat } from "@/domain/schema";
+import { MAX_ROOM_SIZE } from "@/domain/schema";
 import { nextPaletteColor, ROOM_PALETTE } from "@/graphics/palette";
 import i18n from "@/i18n";
 import { newId } from "@/lib/id";
@@ -20,6 +21,7 @@ import {
   findFreeSpot,
   nextSeatLabels,
   numberSeats,
+  resizeLoss,
   rotateFacing,
   type NumberingOrder,
   type Pt,
@@ -145,9 +147,7 @@ export function addRoomFromTemplate(opts: {
   const seats = tpl.seats
     .filter(fits)
     .map((s, i) => ({ ...s, id: newId("seat_"), label: labels[i]!, tags: [] }));
-  const entrances = tpl.entrances
-    .filter(fits)
-    .map((e) => ({ ...e, id: newId("ent_") }));
+  const entrances = tpl.entrances.filter(fits).map((e) => ({ ...e, id: newId("ent_") }));
   const position = opts.position ?? findFreeSpot(all, width, height);
   const id = store().addRoom({
     name,
@@ -195,6 +195,45 @@ export function duplicateRoomAuto(roomId: ID): ID | null {
   const id = store().duplicateRoom(roomId, t("list.copyName", { name: room.name }), pos);
   if (id) selectRoom(id);
   return id;
+}
+
+/** 部屋のサイズ変更。席・入口が消える場合は確認する。offset は左/上に広げた量 */
+export async function resizeWithConfirm(
+  roomId: ID,
+  width: number,
+  height: number,
+  offset: { dx: number; dy: number } = { dx: 0, dy: 0 },
+): Promise<boolean> {
+  const room = findRoom(roomId);
+  if (!room) return false;
+  const w = Math.max(1, Math.min(MAX_ROOM_SIZE, Math.round(width)));
+  const h = Math.max(1, Math.min(MAX_ROOM_SIZE, Math.round(height)));
+  if (w === room.width && h === room.height && offset.dx === 0 && offset.dy === 0) return false;
+  const loss = resizeLoss(room, w, h, offset);
+  if (loss.seats.length || loss.entrances.length) {
+    const t = tr();
+    const assigned = assignedSeatCount(
+      getProject(),
+      loss.seats.map((s) => s.id),
+    );
+    const ok = await confirm({
+      title: t("confirm.shrink.title"),
+      description: [
+        t("confirm.shrink.description", {
+          seats: loss.seats.length,
+          entrances: loss.entrances.length,
+        }),
+        assigned ? t("confirm.shrink.assigned", { count: assigned }) : "",
+      ]
+        .filter(Boolean)
+        .join(" "),
+      confirmLabel: t("confirm.shrink.confirm"),
+      destructive: true,
+    });
+    if (!ok) return false;
+  }
+  store().resizeRoom(roomId, w, h, offset);
+  return true;
 }
 
 export function renumberRoom(roomId: ID, order: NumberingOrder) {

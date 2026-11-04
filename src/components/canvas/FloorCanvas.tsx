@@ -101,8 +101,8 @@ export function FloorCanvas({
   const [panning, setPanning] = useState(false);
   const hoverRef = useRef(false);
   const fittedRef = useRef(false);
-  const initialFitRef = useRef(initialFit);
-  initialFitRef.current = initialFit;
+  // 初回だけ使う
+  const [firstFit] = useState(initialFit);
 
   // ポインタ状態（再描画不要なので ref）
   const pan = useRef<{ id: number; x: number; y: number; moved: boolean; pending: boolean } | null>(
@@ -133,7 +133,7 @@ export function FloorCanvas({
       });
       if (!fittedRef.current) {
         fittedRef.current = true;
-        if (initialFitRef.current) viewport.fit(initialFitRef.current, { animate: false });
+        if (firstFit) viewport.fit(firstFit, { animate: false });
       }
     };
     apply();
@@ -143,7 +143,7 @@ export function FloorCanvas({
       ro.disconnect();
       viewport.attach(null);
     };
-  }, [viewport]);
+  }, [viewport, firstFit]);
 
   // ホイール（passive: false が必要なので addEventListener）
   useEffect(() => {
@@ -218,7 +218,13 @@ export function FloorCanvas({
     if (wantsPan || (readOnly && e.button === 0)) {
       e.preventDefault();
       e.currentTarget.setPointerCapture(e.pointerId);
-      pan.current = { id: e.pointerId, x: e.clientX, y: e.clientY, moved: false, pending: !wantsPan };
+      pan.current = {
+        id: e.pointerId,
+        x: e.clientX,
+        y: e.clientY,
+        moved: false,
+        pending: !wantsPan,
+      };
       if (wantsPan) setPanning(true);
       if (!wantsPan) onPointerDown?.(toEvent(e));
       return;

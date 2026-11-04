@@ -24,9 +24,18 @@ export function EditorRooms() {
       {rooms.map((room) => {
         if (room.hidden) return null;
         // 部屋ごとに文字列キー化して memo を効かせる
-        const seatKey = room.seats.filter((s) => selSeats.has(s.id)).map((s) => s.id).join(",");
-        const entKey = room.entrances.filter((e) => selEnts.has(e.id)).map((e) => e.id).join(",");
-        const dupKey = room.seats.filter((s) => dup.has(s.label)).map((s) => s.id).join(",");
+        const seatKey = room.seats
+          .filter((s) => selSeats.has(s.id))
+          .map((s) => s.id)
+          .join(",");
+        const entKey = room.entrances
+          .filter((e) => selEnts.has(e.id))
+          .map((e) => e.id)
+          .join(",");
+        const dupKey = room.seats
+          .filter((s) => dup.has(s.label))
+          .map((s) => s.id)
+          .join(",");
         const selected = selection.roomIds.includes(room.id) && !seatKey && !entKey;
         return (
           <EditorRoom
@@ -72,8 +81,7 @@ const EditorRoom = memo(function EditorRoom({
   const seatStates = useMemo(() => {
     const m = new Map<ID, SeatVisualState>();
     for (const id of seatKey ? seatKey.split(",") : []) m.set(id, { selected: true });
-    for (const id of dupKey ? dupKey.split(",") : [])
-      m.set(id, { ...m.get(id), violation: true });
+    for (const id of dupKey ? dupKey.split(",") : []) m.set(id, { ...m.get(id), violation: true });
     return m;
   }, [seatKey, dupKey]);
   const ents = useMemo(() => new Set(entKey ? entKey.split(",") : []), [entKey]);

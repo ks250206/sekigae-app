@@ -64,9 +64,7 @@ export function HoverPreview() {
   }
   if (!room || hover.x === undefined || hover.y === undefined) {
     if (tool === "select") return null;
-    return (
-      <CellMark x={hover.cellX} y={hover.cellY} color="var(--canvas-violation)" dashed />
-    );
+    return <CellMark x={hover.cellX} y={hover.cellY} color="var(--canvas-violation)" dashed />;
   }
   const { x, y } = hover;
   return (
@@ -103,9 +101,7 @@ export function HoverPreview() {
           strokeOpacity={0.7}
         />
       )}
-      {tool === "select" && hover.entranceId && (
-        <EntranceHover room={room} id={hover.entranceId} />
-      )}
+      {tool === "select" && hover.entranceId && <EntranceHover room={room} id={hover.entranceId} />}
     </g>
   );
 }
@@ -127,7 +123,9 @@ export function DragPreview() {
 
   if (preview.kind === "rect") {
     const color =
-      preview.mode === "marquee" ? "var(--canvas-selection)" : (TOOL_COLOR[tool] ?? "var(--canvas-ok)");
+      preview.mode === "marquee"
+        ? "var(--canvas-selection)"
+        : (TOOL_COLOR[tool] ?? "var(--canvas-ok)");
     // 部屋の範囲にクリップ
     const x0 = Math.max(0, preview.x);
     const y0 = Math.max(0, preview.y);
@@ -244,9 +242,7 @@ export function PlacementPreview() {
           !!room &&
           canPlaceSeat(room, c.wx - room.position.x, c.wy - room.position.y) &&
           cellAt(room, c.wx - room.position.x, c.wy - room.position.y) === "floor";
-        return (
-          <SeatGlyph key={i} x={c.wx} y={c.wy} facing={c.facing} ghost invalid={!ok} />
-        );
+        return <SeatGlyph key={i} x={c.wx} y={c.wy} facing={c.facing} ghost invalid={!ok} />;
       })}
     </g>
   );

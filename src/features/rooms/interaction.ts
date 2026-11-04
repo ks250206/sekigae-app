@@ -3,11 +3,9 @@
  * - 1 ストローク / 1 ドラッグ = 1 回の Undo（transaction.begin → commit）
  * - プレビュー（矩形・移動・リサイズ）は editorStore に書き、オーバーレイが描く
  */
-import { confirm } from "@/components/confirm";
 import type { CanvasPointerEvent } from "@/components/canvas";
 import type { ID, Room } from "@/domain/schema";
 import { seatAt } from "@/domain/geometry/room";
-import i18n from "@/i18n";
 import { getProject, transaction, useProjectStore } from "@/store/project";
 import { useUiStore } from "@/store/ui";
 import {
@@ -16,6 +14,7 @@ import {
   commitPlacement,
   eraseCells,
   findRoom,
+  resizeWithConfirm,
   selectEntrance,
   selectRoom,
   selectSeats,
@@ -23,7 +22,6 @@ import {
 } from "./actions";
 import { isPaintTool, useEditor, type Hover, type PaintTool } from "./editorStore";
 import {
-  assignedSeatCount,
   bresenham,
   canMoveSeats,
   entranceAt,
@@ -48,7 +46,6 @@ type Drag =
 
 const store = () => useProjectStore.getState();
 const visibleRooms = () => getProject().layout.rooms.filter((r) => !r.hidden);
-const tr = () => i18n.getFixedT(null, "rooms");
 
 /** 入口ツール用: 点の近くの外周辺（部屋の少し外側も含む） */
 function edgeNear(rooms: Room[], wx: number, wy: number) {
@@ -105,7 +102,9 @@ export function createInteraction() {
   const paintStep = (roomId: ID, tool: PaintTool, cells: Pt[]) => {
     const room = findRoom(roomId);
     if (!room) return;
-    const inside = cells.filter((c) => c.x >= 0 && c.y >= 0 && c.x < room.width && c.y < room.height);
+    const inside = cells.filter(
+      (c) => c.x >= 0 && c.y >= 0 && c.x < room.width && c.y < room.height,
+    );
     if (!inside.length) return;
     if (tool === "eraser") eraseCells(roomId, inside);
     else store().paintCells(roomId, inside, tool);
@@ -153,7 +152,8 @@ export function createInteraction() {
       const roomId = headerEl.getAttribute("data-room-header")!;
       const room = findRoom(roomId);
       if (!room) return;
-      if (!useUiStore.getState().selection.roomIds.includes(roomId) || !additive) selectRoom(roomId);
+      if (!useUiStore.getState().selection.roomIds.includes(roomId) || !additive)
+        selectRoom(roomId);
       transaction.begin();
       drag = { kind: "moveRoom", roomId, origin: { ...room.position }, start: { x: e.x, y: e.y } };
       return;
@@ -173,7 +173,15 @@ export function createInteraction() {
       const p = { x: hover.x, y: hover.y };
       if (native.shiftKey) {
         drag = { kind: "paint", roomId: room.id, tool, last: p, start: p, rect: true };
-        editor.setPreview({ kind: "rect", roomId: room.id, x: p.x, y: p.y, w: 1, h: 1, mode: "paint" });
+        editor.setPreview({
+          kind: "rect",
+          roomId: room.id,
+          x: p.x,
+          y: p.y,
+          w: 1,
+          h: 1,
+          mode: "paint",
+        });
         return;
       }
       transaction.begin();
@@ -245,7 +253,12 @@ export function createInteraction() {
     if (d.kind === "resize") {
       const room = findRoom(d.roomId);
       if (!room) return;
-      const r = resizeRect(room, d.handle, Math.round(e.x - d.start.x), Math.round(e.y - d.start.y));
+      const r = resizeRect(
+        room,
+        d.handle,
+        Math.round(e.x - d.start.x),
+        Math.round(e.y - d.start.y),
+      );
       const loss = resizeLoss(room, r.w, r.h, {
         dx: room.position.x - r.x,
         dy: room.position.y - r.y,
@@ -339,7 +352,9 @@ export function createInteraction() {
       const ids = new Set(d.ids);
       store().moveSeats(
         room.id,
-        room.seats.filter((s) => ids.has(s.id)).map((s) => ({ id: s.id, x: s.x + d.dx, y: s.y + d.dy })),
+        room.seats
+          .filter((s) => ids.has(s.id))
+          .map((s) => ({ id: s.id, x: s.x + d.dx, y: s.y + d.dy })),
       );
       return;
     }
@@ -350,7 +365,10 @@ export function createInteraction() {
       const ids = room.seats
         .filter(
           (s) =>
-            s.x >= preview.x && s.y >= preview.y && s.x < preview.x + preview.w && s.y < preview.y + preview.h,
+            s.x >= preview.x &&
+            s.y >= preview.y &&
+            s.x < preview.x + preview.w &&
+            s.y < preview.y + preview.h,
         )
         .map((s) => s.id);
       if (d.additive) {
@@ -366,31 +384,7 @@ export function createInteraction() {
       const { x, y, w, h } = preview;
       if (x === room.position.x && y === room.position.y && w === room.width && h === room.height)
         return;
-      const offset = { dx: room.position.x - x, dy: room.position.y - y };
-      const loss = resizeLoss(room, w, h, offset);
-      if (loss.seats.length || loss.entrances.length) {
-        const t = tr();
-        const assigned = assignedSeatCount(
-          getProject(),
-          loss.seats.map((s) => s.id),
-        );
-        const ok = await confirm({
-          title: t("confirm.shrink.title"),
-          description: [
-            t("confirm.shrink.description", {
-              seats: loss.seats.length,
-              entrances: loss.entrances.length,
-            }),
-            assigned ? t("confirm.shrink.assigned", { count: assigned }) : "",
-          ]
-            .filter(Boolean)
-            .join(" "),
-          confirmLabel: t("confirm.shrink.confirm"),
-          destructive: true,
-        });
-        if (!ok) return;
-      }
-      store().resizeRoom(room.id, w, h, offset);
+      await resizeWithConfirm(room.id, w, h, { dx: room.position.x - x, dy: room.position.y - y });
     }
   };
 

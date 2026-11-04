@@ -24,9 +24,7 @@ export type Placement =
   | { kind: "seats"; items: PlacementItem[]; source: "paste" | "template" }
   | { kind: "room"; room: Room };
 
-export type Clipboard =
-  | { kind: "seats"; items: PlacementItem[] }
-  | { kind: "room"; room: Room };
+export type Clipboard = { kind: "seats"; items: PlacementItem[] } | { kind: "room"; room: Room };
 
 export interface Hover {
   /** ワールド座標 */
@@ -45,7 +43,15 @@ export interface Hover {
 }
 
 export type DragPreview =
-  | { kind: "rect"; roomId: ID; x: number; y: number; w: number; h: number; mode: "paint" | "marquee" }
+  | {
+      kind: "rect";
+      roomId: ID;
+      x: number;
+      y: number;
+      w: number;
+      h: number;
+      mode: "paint" | "marquee";
+    }
   | { kind: "moveSeats"; roomId: ID; ids: ID[]; dx: number; dy: number; valid: boolean }
   | {
       kind: "resize";

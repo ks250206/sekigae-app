@@ -40,7 +40,8 @@ export {
   HeatmapLegend,
   type DepthHeatmapOverlayProps,
 } from "./DepthHeatmapOverlay";
-export { CanvasDefs, DEF, defUrl } from "./CanvasDefs";
+export { CanvasDefs } from "./CanvasDefs";
+export { DEF, defUrl } from "./defs";
 export {
   useCanvasViewport,
   useLod,

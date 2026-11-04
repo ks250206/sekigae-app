@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import type { ViewportController } from "@/components/canvas";
 import { isEditableTarget } from "@/lib/keyboard";
 import { usePrefs } from "@/store/prefs";
@@ -36,7 +36,9 @@ export function useRoomShortcuts(opts: {
   fitSelection: () => void;
 }) {
   const ref = useRef(opts);
-  ref.current = opts;
+  useLayoutEffect(() => {
+    ref.current = opts;
+  });
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {

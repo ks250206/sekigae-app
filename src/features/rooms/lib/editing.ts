@@ -86,7 +86,7 @@ export function roomPrefix(name: string): string {
   if (tail) return tail[1]!.toUpperCase().slice(0, 3);
   const head = /^[A-Za-z]/.exec(trimmed);
   if (head) return head[0].toUpperCase();
-  return [...trimmed][0] ?? "S";
+  return Array.from(trimmed)[0] ?? "S";
 }
 
 export const formatLabel = (prefix: string, n: number) => `${prefix}-${String(n).padStart(2, "0")}`;
@@ -231,7 +231,8 @@ export function nearestPerimeterEdge(
         const d = DIRS[side];
         const ex = x + 0.5 + d.dx * 0.5;
         const ey = y + 0.5 + d.dy * 0.5;
-        const along = d.dx === 0 ? Math.max(0, Math.abs(lx - ex) - 0.5) : Math.max(0, Math.abs(ly - ey) - 0.5);
+        const along =
+          d.dx === 0 ? Math.max(0, Math.abs(lx - ex) - 0.5) : Math.max(0, Math.abs(ly - ey) - 0.5);
         const across = d.dx === 0 ? Math.abs(ly - ey) : Math.abs(lx - ex);
         const dist = Math.hypot(along, across);
         if (dist <= maxDist && (!best || dist < best.d)) best = { x, y, side, d: dist };
@@ -277,6 +278,7 @@ export function resizeRect(room: Room, handle: ResizeHandle, dx: number, dy: num
 export function assignedSeatCount(project: Project, seatIds: Iterable<ID>): number {
   const ids = new Set(seatIds);
   const assigned = new Set<ID>();
-  for (const p of project.plans) for (const sid of Object.keys(p.assignment)) if (ids.has(sid)) assigned.add(sid);
+  for (const p of project.plans)
+    for (const sid of Object.keys(p.assignment)) if (ids.has(sid)) assigned.add(sid);
   return assigned.size;
 }

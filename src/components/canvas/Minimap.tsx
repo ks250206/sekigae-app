@@ -31,7 +31,12 @@ export function Minimap({
   const vb = visibleBounds(view);
   const rb = roomsBounds(rooms) ?? vb;
   const pad = Math.max(2, Math.max(rb.width, rb.height) * 0.08);
-  const b = { x: rb.x - pad, y: rb.y - pad, width: rb.width + pad * 2, height: rb.height + pad * 2 };
+  const b = {
+    x: rb.x - pad,
+    y: rb.y - pad,
+    width: rb.width + pad * 2,
+    height: rb.height + pad * 2,
+  };
   const px = Math.max(b.width / width, b.height / height);
 
   const go = (clientX: number, clientY: number) => {

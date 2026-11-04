@@ -3,7 +3,7 @@
  * 状態: 空席 / 割当済み(occupied) / ロック / 違反 / 選択 / ハイライト。
  * children はセル左上原点・回転しない座標系で上に重ねる（席配置画面のメンバーチップなど）。
  */
-import { memo, useRef, type ReactNode } from "react";
+import { memo, useState, type ReactNode } from "react";
 import type { Facing } from "@/domain/schema";
 import { useLod } from "./context";
 import { DESK_CENTER, FACING_ANGLE, fitText } from "./geometry";
@@ -39,11 +39,14 @@ export interface SeatGlyphProps extends SeatVisualState {
 
 /** 0→270 のような逆回りを避け、最短方向へ回す角度 */
 function useSmoothAngle(target: number) {
-  const ref = useRef(target);
-  const cur = ref.current;
-  const delta = ((((target - cur) % 360) + 540) % 360) - 180;
-  ref.current = cur + delta;
-  return ref.current;
+  const [s, setS] = useState({ target, angle: target });
+  if (s.target !== target) {
+    const delta = ((((target - s.angle) % 360) + 540) % 360) - 180;
+    const next = { target, angle: s.angle + delta };
+    setS(next);
+    return next.angle;
+  }
+  return s.angle;
 }
 
 export const SeatGlyph = memo(function SeatGlyph({
@@ -167,25 +170,26 @@ export const SeatGlyph = memo(function SeatGlyph({
           />
           {lod === "near" && !invalid && (
             <>
-              {/* モニター + キーボード */}
-              <rect x={0.3} y={0.11} width={0.4} height={0.07} rx={0.025} fill="var(--sk-monitor)" />
+              {/* モニター（奥側の細いバー）。ラベルが無いときはキーボードも */}
               <rect
-                x={0.46}
-                y={0.18}
-                width={0.08}
+                x={0.28}
+                y={0.09}
+                width={0.44}
                 height={0.05}
-                fill="var(--sk-monitor)"
-                opacity={0.7}
-              />
-              <rect
-                x={0.34}
-                y={0.36}
-                width={0.32}
-                height={0.1}
                 rx={0.02}
-                fill="var(--canvas-desk-stroke)"
-                opacity={0.35}
+                fill="var(--sk-monitor)"
               />
+              {!(label && showLabel) && (
+                <rect
+                  x={0.34}
+                  y={0.34}
+                  width={0.32}
+                  height={0.1}
+                  rx={0.02}
+                  fill="var(--canvas-desk-stroke)"
+                  opacity={0.35}
+                />
+              )}
             </>
           )}
           {occupied && (
@@ -207,7 +211,12 @@ export const SeatGlyph = memo(function SeatGlyph({
       )}
       {locked && lod !== "far" && (
         <g transform="translate(0.84 0.16)">
-          <circle r={0.15} fill="var(--sk-locked)" stroke="var(--canvas-floor)" strokeWidth={0.03} />
+          <circle
+            r={0.15}
+            fill="var(--sk-locked)"
+            stroke="var(--canvas-floor)"
+            strokeWidth={0.03}
+          />
           <path
             d="M-0.05 -0.01V-0.04A0.05 0.05 0 0 1 0.05 -0.04V-0.01"
             fill="none"

@@ -49,7 +49,12 @@ export function rotateItems<T extends PlacementItem>(items: T[], steps = 1): T[]
   const n = (((steps % 4) + 4) % 4) as 0 | 1 | 2 | 3;
   for (let k = 0; k < n; k++) {
     const { h } = itemsSize(cur);
-    cur = cur.map((it) => ({ ...it, dx: h - 1 - it.dy, dy: it.dx, facing: rotateFacing(it.facing) }));
+    cur = cur.map((it) => ({
+      ...it,
+      dx: h - 1 - it.dy,
+      dy: it.dx,
+      facing: rotateFacing(it.facing),
+    }));
   }
   return cur;
 }

@@ -108,7 +108,10 @@ export function HeatmapLegend({ className }: { className?: string }) {
       data-testid="heatmap-legend"
     >
       <div className="mb-1 font-medium">{t("canvas.heatmap.title")}</div>
-      <div className="h-2 w-40 rounded-full" style={{ background: `linear-gradient(90deg,${stops})` }} />
+      <div
+        className="h-2 w-40 rounded-full"
+        style={{ background: `linear-gradient(90deg,${stops})` }}
+      />
       <div className="text-muted-foreground mt-1 flex justify-between">
         <span>{t("canvas.heatmap.near")}</span>
         <span>{t("canvas.heatmap.far")}</span>

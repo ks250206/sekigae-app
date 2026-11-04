@@ -143,7 +143,10 @@ export function createViewport(init?: Partial<ViewState>): ViewportController {
     // 対数補間でズームを自然に
     const ls0 = Math.log(from.scale);
     const ls1 = Math.log(target.scale);
-    const c0 = { x: from.x + from.width / 2 / from.scale, y: from.y + from.height / 2 / from.scale };
+    const c0 = {
+      x: from.x + from.width / 2 / from.scale,
+      y: from.y + from.height / 2 / from.scale,
+    };
     const c1 = {
       x: target.x + target.width / 2 / target.scale,
       y: target.y + target.height / 2 / target.scale,
