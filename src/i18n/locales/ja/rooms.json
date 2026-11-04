@@ -1,4 +1,248 @@
 {
   "title": "部屋",
-  "description": "部屋を作成し、席と入口を配置します。"
+  "description": "部屋を作成し、席と入口を配置します。",
+  "canvas": {
+    "label": "フロアキャンバス",
+    "seatBadge_one": "{{count}} 席",
+    "seatBadge_other": "{{count}} 席",
+    "minimap": "ミニマップ",
+    "zoomIn": "拡大",
+    "zoomOut": "縮小",
+    "zoomReset": "100% に戻す",
+    "fitAll": "全体を表示",
+    "fitSelection": "選択範囲を表示",
+    "heatmap": {
+      "title": "奥行き（入口からの距離）",
+      "near": "入口側",
+      "far": "奥"
+    },
+    "resizeHandle": "サイズ変更 ({{dir}})",
+    "willRemove_one": "{{count}} 件削除",
+    "willRemove_other": "{{count}} 件削除",
+    "toggleGrid": "グリッド",
+    "toggleHeatmap": "奥行きヒートマップ",
+    "toggleRanks": "奥行き順位を表示",
+    "toggleMinimap": "ミニマップ"
+  },
+  "list": {
+    "title": "部屋一覧",
+    "summary": "{{rooms}} 部屋・{{seats}} 席",
+    "add": "追加",
+    "empty": "まだ部屋がありません。",
+    "defaultName": "部屋 {{n}}",
+    "copyName": "{{name}} のコピー",
+    "reorder": "ドラッグで並べ替え",
+    "color": "部屋の色",
+    "renameHint": "ダブルクリックで名前を変更",
+    "show": "表示する",
+    "hide": "隠す",
+    "duplicate": "複製",
+    "delete": "削除"
+  },
+  "add": {
+    "name": "部屋名",
+    "template": "テンプレート",
+    "width": "幅（セル）",
+    "height": "奥行き（セル）",
+    "autoPlace": "空いている場所に自動で配置します。",
+    "submit": "部屋を追加"
+  },
+  "confirm": {
+    "deleteRoom": {
+      "title": "「{{name}}」を削除しますか？",
+      "description_one": "{{count}} 席も一緒に削除されます。Ctrl+Z で元に戻せます。",
+      "description_other": "{{count}} 席も一緒に削除されます。Ctrl+Z で元に戻せます。",
+      "assigned_one": "配置案で {{count}} 席にメンバーが割り当てられています。削除すると割り当ても解除されます。",
+      "assigned_other": "配置案で {{count}} 席にメンバーが割り当てられています。削除すると割り当ても解除されます。",
+      "confirm": "削除する"
+    },
+    "deleteSeats": {
+      "title_one": "{{count}} 席を削除しますか？",
+      "title_other": "{{count}} 席を削除しますか？",
+      "assigned_one": "うち {{count}} 席にはメンバーが割り当てられています。",
+      "assigned_other": "うち {{count}} 席にはメンバーが割り当てられています。"
+    },
+    "shrink": {
+      "title": "部屋を縮小しますか？",
+      "description": "範囲外になる席 {{seats}} 件と入口 {{entrances}} 件が削除されます。",
+      "assigned_one": "うち {{count}} 席にはメンバーが割り当てられています。",
+      "assigned_other": "うち {{count}} 席にはメンバーが割り当てられています。",
+      "confirm": "縮小する"
+    }
+  },
+  "toast": {
+    "renumbered_one": "{{count}} 席を採番し直しました",
+    "renumbered_other": "{{count}} 席を採番し直しました",
+    "copiedSeats_one": "{{count}} 席をコピーしました",
+    "copiedSeats_other": "{{count}} 席をコピーしました",
+    "copiedRoom": "「{{name}}」をコピーしました",
+    "placeOutside": "部屋の中に配置してください",
+    "nothingPlaced": "ここには配置できません",
+    "partiallyPlaced": "{{total}} 席中 {{placed}} 席を配置しました（置けない位置を除外）"
+  },
+  "tools": {
+    "label": "ツール",
+    "select": "選択",
+    "floor": "床",
+    "void": "部屋外",
+    "obstacle": "障害物",
+    "seat": "席",
+    "entrance": "入口",
+    "eraser": "消しゴム",
+    "pan": "手のひら（移動）",
+    "facing": "新しい席の向き: {{dir}}",
+    "hint": {
+      "select": "クリックで選択、ドラッグで移動・範囲選択",
+      "floor": "床に戻す。Shift+ドラッグで矩形",
+      "void": "部屋外にして L 字などを作る",
+      "obstacle": "柱・棚などを置く",
+      "seat": "クリックで席を置く / 外す。ドラッグで連続配置",
+      "entrance": "部屋の外周の辺に入口を置く",
+      "eraser": "席・入口・障害物を消す",
+      "pan": "ドラッグで表示を移動"
+    }
+  },
+  "hint": {
+    "select": "クリックで選択 · ドラッグで席を移動 · 部屋名をドラッグで部屋を移動",
+    "floor": "クリック / ドラッグで床を塗る · Shift+ドラッグで矩形",
+    "void": "クリック / ドラッグで部屋外にする · Shift+ドラッグで矩形",
+    "obstacle": "クリック / ドラッグで障害物 · Shift+ドラッグで矩形",
+    "seat": "クリックで席を追加 / 削除 · R で向きを回転",
+    "entrance": "外周の辺をクリックして入口を追加 / 削除",
+    "eraser": "クリック / ドラッグで消す",
+    "pan": "ドラッグで表示を移動 · ホイールでズーム",
+    "placeSeats": "クリックで配置 · R で回転 · Shift+クリックで続けて配置 · Esc で終了",
+    "placeRoom": "クリックで部屋を配置 · Esc でキャンセル"
+  },
+  "facing": {
+    "n": "上向き",
+    "e": "右向き",
+    "s": "下向き",
+    "w": "左向き",
+    "short": {
+      "n": "上",
+      "e": "右",
+      "s": "下",
+      "w": "左"
+    }
+  },
+  "templates": {
+    "title": "席のテンプレート",
+    "hint": "選んでからキャンバスをクリックして配置します。",
+    "rotateHint": "配置中は R で回転できます（現在の既定の向き: {{dir}}）",
+    "seat": {
+      "island2x2": "島型 2×2",
+      "island2x3": "島型 2×3",
+      "island2x4": "島型 2×4",
+      "wallRow": "壁沿い一列",
+      "classroom": "教室型"
+    },
+    "room": {
+      "empty": "空の部屋",
+      "small": "小部屋",
+      "medium": "中部屋",
+      "large": "大部屋"
+    }
+  },
+  "empty": {
+    "title": "まず部屋を作りましょう",
+    "description": "テンプレートから始めるか、空の部屋を追加して床・席・入口を描きます。",
+    "blank": "空の部屋を追加",
+    "shortcutsHint": "ショートカット: {{keys}}"
+  },
+  "warnings": {
+    "noEntrance": "入口がありません（奥行きが計算できません）",
+    "noEntranceRoom": "「{{name}}」に入口がありません",
+    "overlap": "他の部屋と重なっています",
+    "overlapCount_one": "{{count}} 部屋が重なっています",
+    "overlapCount_other": "{{count}} 部屋が重なっています",
+    "duplicateLabel": "同じラベルの席が他にもあります",
+    "duplicateLabels": "ラベルの重複: {{labels}}"
+  },
+  "inspector": {
+    "title": "インスペクタ",
+    "overview": "概要",
+    "nothingSelected": "部屋や席を選択すると、ここで詳細を編集できます。",
+    "rooms": "部屋",
+    "room": "部屋",
+    "name": "名前",
+    "seats": "席",
+    "entrances": "入口",
+    "obstacles": "障害物",
+    "numbering": "席の採番",
+    "renumber": "採番",
+    "note": "メモ",
+    "notePlaceholder": "例: 窓側は日当たりが良い",
+    "position": "位置: ({{x}}, {{y}})",
+    "seat": "席",
+    "label": "ラベル",
+    "facing": "向き",
+    "tags": "タグ",
+    "addTag": "タグを追加",
+    "removeTag": "タグ「{{tag}}」を外す",
+    "partialTag": "一部の席だけが持つタグ",
+    "deleteSeats": "席を削除",
+    "multi_one": "{{count}} 席を選択中",
+    "multi_other": "{{count}} 席を選択中",
+    "multiRooms_one": "{{count}} 部屋にまたがっています",
+    "multiRooms_other": "{{count}} 部屋にまたがっています",
+    "multiHint": "矢印キーで移動、R で回転、Delete で削除できます。",
+    "entrance_one": "入口 ({{count}})",
+    "entrance_other": "入口 ({{count}})",
+    "deleteEntrance": "入口を削除",
+    "entranceHint": "入口ツール（E）で外周の辺をクリックして追加・削除できます。"
+  },
+  "tags": {
+    "window": "窓側",
+    "aisle": "通路側",
+    "entranceSide": "入口側",
+    "wall": "壁際",
+    "quiet": "静か"
+  },
+  "numbering": {
+    "row": "行ごと（左上から）",
+    "column": "列ごと",
+    "entrance": "入口に近い順"
+  },
+  "settings": {
+    "title": "プロジェクト設定",
+    "adjacency": "「隣」の判定",
+    "adjacencyHint": "ルールの「隣」に斜めを含めるか。",
+    "adj4": "上下左右 (4)",
+    "adj8": "斜めも (8)"
+  },
+  "shortcuts": {
+    "groups": {
+      "tools": "ツール",
+      "edit": "編集",
+      "view": "表示"
+    },
+    "toolSelect": "選択ツール",
+    "toolFloor": "床ツール",
+    "toolVoid": "部屋外ツール",
+    "toolObstacle": "障害物ツール",
+    "toolSeat": "席ツール",
+    "toolEntrance": "入口ツール",
+    "toolEraser": "消しゴム",
+    "toolPan": "手のひらツール",
+    "panHold": "押している間パン",
+    "rotate": "向きを時計回りに回転",
+    "rotateBack": "向きを反時計回りに回転",
+    "delete": "選択を削除",
+    "nudge": "1 セル移動",
+    "nudgeFar": "5 セル移動",
+    "copy": "コピー",
+    "paste": "貼り付け",
+    "duplicate": "複製",
+    "selectAll": "すべての席を選択",
+    "escape": "キャンセル / 選択解除",
+    "zoomIn": "拡大",
+    "zoomOut": "縮小",
+    "zoomReset": "100% に戻す",
+    "fitAll": "全体を表示",
+    "fitSelection": "選択範囲を表示",
+    "toggleHeatmap": "ヒートマップ切替",
+    "toggleGrid": "グリッド切替",
+    "toggleMinimap": "ミニマップ切替"
+  }
 }

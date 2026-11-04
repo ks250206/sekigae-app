@@ -1,4 +1,248 @@
 {
   "title": "Rooms",
-  "description": "Create rooms and place seats and entrances."
+  "description": "Create rooms and place seats and entrances.",
+  "canvas": {
+    "label": "Floor canvas",
+    "seatBadge_one": "{{count}} seat",
+    "seatBadge_other": "{{count}} seats",
+    "minimap": "Minimap",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "zoomReset": "Reset to 100%",
+    "fitAll": "Fit all rooms",
+    "fitSelection": "Zoom to selection",
+    "heatmap": {
+      "title": "Depth (distance from entrance)",
+      "near": "Entrance",
+      "far": "Back"
+    },
+    "resizeHandle": "Resize ({{dir}})",
+    "willRemove_one": "removes {{count}} item",
+    "willRemove_other": "removes {{count}} items",
+    "toggleGrid": "Grid",
+    "toggleHeatmap": "Depth heatmap",
+    "toggleRanks": "Show depth rank",
+    "toggleMinimap": "Minimap"
+  },
+  "list": {
+    "title": "Rooms",
+    "summary": "{{rooms}} rooms · {{seats}} seats",
+    "add": "Add",
+    "empty": "No rooms yet.",
+    "defaultName": "Room {{n}}",
+    "copyName": "{{name}} copy",
+    "reorder": "Drag to reorder",
+    "color": "Room color",
+    "renameHint": "Double-click to rename",
+    "show": "Show",
+    "hide": "Hide",
+    "duplicate": "Duplicate",
+    "delete": "Delete"
+  },
+  "add": {
+    "name": "Room name",
+    "template": "Template",
+    "width": "Width (cells)",
+    "height": "Depth (cells)",
+    "autoPlace": "It will be placed in free space automatically.",
+    "submit": "Add room"
+  },
+  "confirm": {
+    "deleteRoom": {
+      "title": "Delete “{{name}}”?",
+      "description_one": "Its {{count}} seat will be removed too. You can undo with Ctrl+Z.",
+      "description_other": "Its {{count}} seats will be removed too. You can undo with Ctrl+Z.",
+      "assigned_one": "{{count}} seat is assigned to a member in a seating plan. Deleting it also removes the assignment.",
+      "assigned_other": "{{count}} seats are assigned to members in seating plans. Deleting also removes those assignments.",
+      "confirm": "Delete"
+    },
+    "deleteSeats": {
+      "title_one": "Delete {{count}} seat?",
+      "title_other": "Delete {{count}} seats?",
+      "assigned_one": "{{count}} of them is assigned to a member.",
+      "assigned_other": "{{count}} of them are assigned to members."
+    },
+    "shrink": {
+      "title": "Shrink the room?",
+      "description": "{{seats}} seat(s) and {{entrances}} entrance(s) outside the new size will be removed.",
+      "assigned_one": "{{count}} of those seats is assigned.",
+      "assigned_other": "{{count}} of those seats are assigned.",
+      "confirm": "Shrink"
+    }
+  },
+  "toast": {
+    "renumbered_one": "Renumbered {{count}} seat",
+    "renumbered_other": "Renumbered {{count}} seats",
+    "copiedSeats_one": "Copied {{count}} seat",
+    "copiedSeats_other": "Copied {{count}} seats",
+    "copiedRoom": "Copied “{{name}}”",
+    "placeOutside": "Place it inside a room",
+    "nothingPlaced": "Nothing can be placed here",
+    "partiallyPlaced": "Placed {{placed}} of {{total}} seats (skipped blocked cells)"
+  },
+  "tools": {
+    "label": "Tools",
+    "select": "Select",
+    "floor": "Floor",
+    "void": "Void",
+    "obstacle": "Obstacle",
+    "seat": "Seat",
+    "entrance": "Entrance",
+    "eraser": "Eraser",
+    "pan": "Hand (pan)",
+    "facing": "New seat facing: {{dir}}",
+    "hint": {
+      "select": "Click to select, drag to move or marquee",
+      "floor": "Paint floor. Shift+drag for a rectangle",
+      "void": "Carve out void cells for L-shapes",
+      "obstacle": "Place pillars, shelves, etc.",
+      "seat": "Click to add/remove seats, drag to paint",
+      "entrance": "Place an entrance on a perimeter edge",
+      "eraser": "Erase seats, entrances and obstacles",
+      "pan": "Drag to move the view"
+    }
+  },
+  "hint": {
+    "select": "Click to select · drag seats to move · drag the room name to move the room",
+    "floor": "Click/drag to paint floor · Shift+drag for a rectangle",
+    "void": "Click/drag to carve void · Shift+drag for a rectangle",
+    "obstacle": "Click/drag to place obstacles · Shift+drag for a rectangle",
+    "seat": "Click to add/remove seats · R to rotate",
+    "entrance": "Click a perimeter edge to add/remove an entrance",
+    "eraser": "Click/drag to erase",
+    "pan": "Drag to pan · wheel to zoom",
+    "placeSeats": "Click to place · R to rotate · Shift+click to keep placing · Esc to stop",
+    "placeRoom": "Click to place the room · Esc to cancel"
+  },
+  "facing": {
+    "n": "Up",
+    "e": "Right",
+    "s": "Down",
+    "w": "Left",
+    "short": {
+      "n": "N",
+      "e": "E",
+      "s": "S",
+      "w": "W"
+    }
+  },
+  "templates": {
+    "title": "Seat templates",
+    "hint": "Pick one, then click on the canvas to place it.",
+    "rotateHint": "Press R while placing to rotate (current default: {{dir}})",
+    "seat": {
+      "island2x2": "Island 2×2",
+      "island2x3": "Island 2×3",
+      "island2x4": "Island 2×4",
+      "wallRow": "Wall row",
+      "classroom": "Classroom"
+    },
+    "room": {
+      "empty": "Empty",
+      "small": "Small",
+      "medium": "Medium",
+      "large": "Large"
+    }
+  },
+  "empty": {
+    "title": "Let’s start with a room",
+    "description": "Start from a template, or add an empty room and draw floor, seats and entrances.",
+    "blank": "Add an empty room",
+    "shortcutsHint": "Shortcuts: {{keys}}"
+  },
+  "warnings": {
+    "noEntrance": "No entrance (depth cannot be computed)",
+    "noEntranceRoom": "“{{name}}” has no entrance",
+    "overlap": "Overlaps another room",
+    "overlapCount_one": "{{count}} room overlaps another",
+    "overlapCount_other": "{{count}} rooms overlap",
+    "duplicateLabel": "Another seat has the same label",
+    "duplicateLabels": "Duplicate labels: {{labels}}"
+  },
+  "inspector": {
+    "title": "Inspector",
+    "overview": "Overview",
+    "nothingSelected": "Select a room or seats to edit their details here.",
+    "rooms": "Rooms",
+    "room": "Room",
+    "name": "Name",
+    "seats": "Seats",
+    "entrances": "Entrances",
+    "obstacles": "Obstacles",
+    "numbering": "Seat numbering",
+    "renumber": "Renumber",
+    "note": "Note",
+    "notePlaceholder": "e.g. sunny by the window",
+    "position": "Position: ({{x}}, {{y}})",
+    "seat": "Seat",
+    "label": "Label",
+    "facing": "Facing",
+    "tags": "Tags",
+    "addTag": "Add tag",
+    "removeTag": "Remove tag “{{tag}}”",
+    "partialTag": "Only some of the selected seats have this tag",
+    "deleteSeats": "Delete seats",
+    "multi_one": "{{count}} seat selected",
+    "multi_other": "{{count}} seats selected",
+    "multiRooms_one": "Across {{count}} room",
+    "multiRooms_other": "Across {{count}} rooms",
+    "multiHint": "Arrow keys move, R rotates, Delete removes.",
+    "entrance_one": "Entrance ({{count}})",
+    "entrance_other": "Entrances ({{count}})",
+    "deleteEntrance": "Delete entrance",
+    "entranceHint": "Use the Entrance tool (E) and click a perimeter edge to add or remove."
+  },
+  "tags": {
+    "window": "Window",
+    "aisle": "Aisle",
+    "entranceSide": "Near entrance",
+    "wall": "Wall",
+    "quiet": "Quiet"
+  },
+  "numbering": {
+    "row": "Row by row",
+    "column": "Column by column",
+    "entrance": "Nearest to entrance"
+  },
+  "settings": {
+    "title": "Project settings",
+    "adjacency": "Neighbour rule",
+    "adjacencyHint": "Whether diagonal seats count as neighbours in rules.",
+    "adj4": "Sides (4)",
+    "adj8": "+ Diagonals (8)"
+  },
+  "shortcuts": {
+    "groups": {
+      "tools": "Tools",
+      "edit": "Edit",
+      "view": "View"
+    },
+    "toolSelect": "Select tool",
+    "toolFloor": "Floor tool",
+    "toolVoid": "Void tool",
+    "toolObstacle": "Obstacle tool",
+    "toolSeat": "Seat tool",
+    "toolEntrance": "Entrance tool",
+    "toolEraser": "Eraser",
+    "toolPan": "Hand tool",
+    "panHold": "Hold to pan",
+    "rotate": "Rotate clockwise",
+    "rotateBack": "Rotate counter-clockwise",
+    "delete": "Delete selection",
+    "nudge": "Move by 1 cell",
+    "nudgeFar": "Move by 5 cells",
+    "copy": "Copy",
+    "paste": "Paste",
+    "duplicate": "Duplicate",
+    "selectAll": "Select all seats",
+    "escape": "Cancel / deselect",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "zoomReset": "Reset zoom",
+    "fitAll": "Fit all",
+    "fitSelection": "Zoom to selection",
+    "toggleHeatmap": "Toggle heatmap",
+    "toggleGrid": "Toggle grid",
+    "toggleMinimap": "Toggle minimap"
+  }
 }
