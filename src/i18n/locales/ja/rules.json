@@ -1,4 +1,460 @@
 {
   "title": "ルール",
-  "description": "ブロックを組み合わせて席決めのルールを作ります。"
+  "description": "ブロックを組み合わせて席決めのルールを作ります。",
+  "categories": {
+    "room": "部屋",
+    "seat": "席",
+    "person": "人",
+    "global": "全体",
+    "logic": "論理"
+  },
+  "blocks": {
+    "room": {
+      "only": {
+        "name": "部屋を限定",
+        "template": "<rooms/>は<people/>のみ"
+      },
+      "prefer": {
+        "name": "多めに配置",
+        "template": "<rooms/>には<people/>を多めに"
+      },
+      "count": {
+        "name": "人数を指定",
+        "template": "<rooms/>の<people/>は<value/><op/>"
+      },
+      "exclude": {
+        "name": "部屋に入れない",
+        "template": "<rooms/>には<people/>を入れない"
+      },
+      "diversity": {
+        "name": "混ぜる",
+        "template": "<rooms/>には<attr/>が<min/>種類以上混ざる"
+      },
+      "attrCap": {
+        "name": "偏りの上限",
+        "template": "<rooms/>では同じ<attr/>の人は<max/>以下"
+      }
+    },
+    "seat": {
+      "only": {
+        "name": "席を限定",
+        "template": "<seats/>は<people/>のみ"
+      },
+      "pin": {
+        "name": "席に先に入れる",
+        "template": "<seat/>に<member/>をあらかじめ入れておく"
+      },
+      "empty": {
+        "name": "空席にする",
+        "template": "<seats/>は空席にする"
+      }
+    },
+    "person": {
+      "pin": {
+        "name": "固定",
+        "template": "<member/>は<target/>に固定"
+      },
+      "avoid": {
+        "name": "避ける",
+        "template": "<member/>は<seats/>にしない"
+      }
+    },
+    "pair": {
+      "relation": {
+        "name": "2 人の関係",
+        "template": "<a/>と<b/>は<qualLab/><qualRole/><relation/>"
+      }
+    },
+    "prev": {
+      "different": {
+        "name": "昨年度と変える",
+        "template": "<people/>は昨年度と<scope/>"
+      },
+      "same": {
+        "name": "昨年度と同じ",
+        "template": "<people/>は昨年度と<scope/>"
+      }
+    },
+    "group": {
+      "cluster": {
+        "name": "まとめる",
+        "template": "<people/>を<attr/>ごとにまとめる"
+      },
+      "spread": {
+        "name": "分散する",
+        "template": "<people/>を<attr/>で部屋間に分散"
+      },
+      "mixAdjacent": {
+        "name": "隣と混ぜる",
+        "template": "<people/>は隣の人と<attr/>が異なるようにする"
+      },
+      "buddy": {
+        "name": "面倒見役",
+        "template": "<a/>の<scope/>に、同じ研究室の<b/>が<min/>人以上いる"
+      },
+      "labBalance": {
+        "name": "研究室バランス",
+        "template": "<people/>の各部屋の研究室構成を全体の比率に近づける"
+      }
+    },
+    "depth": {
+      "order": {
+        "name": "奥行きの順",
+        "template": "<people/>は役職が上がるほど<direction/>"
+      }
+    },
+    "logic": {
+      "any": {
+        "name": "いずれか",
+        "template": "次のいずれかを満たす"
+      },
+      "all": {
+        "name": "すべて",
+        "template": "次のすべてを満たす"
+      },
+      "ifThen": {
+        "name": "もし〜なら",
+        "template": "もし〜なら",
+        "if": "もし",
+        "then": "なら"
+      }
+    }
+  },
+  "values": {
+    "op": {
+      "gte": "以上",
+      "lte": "以下",
+      "eq": "ちょうど"
+    },
+    "attr": {
+      "lab": "研究室",
+      "role": "役職",
+      "gender": "性別"
+    },
+    "relation": {
+      "sameRoom": "同じ部屋にする",
+      "differentRoom": "別の部屋にする",
+      "adjacent": "隣にする",
+      "notAdjacent": "隣にしない"
+    },
+    "qualLab": {
+      "same": "同じ研究室同士なら",
+      "different": "別の研究室同士なら"
+    },
+    "qualRole": {
+      "same": "同じ役職同士なら",
+      "different": "別の役職同士なら"
+    },
+    "prevDifferentScope": {
+      "room": "別の部屋",
+      "seat": "別の席"
+    },
+    "prevSameScope": {
+      "room": "同じ部屋",
+      "seat": "同じ席"
+    },
+    "direction": {
+      "seniorBack": "奥",
+      "seniorFront": "入口側"
+    },
+    "buddyScope": {
+      "sameRoom": "同じ部屋",
+      "adjacent": "隣"
+    },
+    "unset": "指定なし"
+  },
+  "units": {
+    "count": "{{n}} 人",
+    "countOne": "{{n}} 人",
+    "percent": "{{n}}%",
+    "countShort": "人",
+    "percentShort": "%"
+  },
+  "placeholders": {
+    "people": "人を選ぶ",
+    "member": "人を選ぶ",
+    "seats": "席を選ぶ",
+    "seat": "席を選ぶ",
+    "target": "席か部屋を選ぶ",
+    "rooms": "部屋を選ぶ",
+    "qualLab": "＋研究室条件",
+    "qualRole": "＋役職条件"
+  },
+  "expr": {
+    "and": " かつ ",
+    "or": " または ",
+    "not": "{{x}}でない",
+    "allPeople": "全員",
+    "allSeats": "すべての席",
+    "allRooms": "すべての部屋",
+    "nobody": "（未選択）",
+    "noSeats": "（未選択）",
+    "listSep": "、",
+    "more": "ほか{{n}}人",
+    "moreSeats": "ほか{{n}}席",
+    "deleted": "（削除済み）",
+    "depthBack": "{{rooms}}の奥{{n}}",
+    "depthFront": "{{rooms}}の入口側{{n}}",
+    "depthCount": "{{n}}席",
+    "depthRatio": "{{n}}%",
+    "seatTag": "タグ「{{tags}}」の席",
+    "tag": "タグ「{{tags}}」",
+    "room": "{{room}}",
+    "seat": "席 {{seat}}",
+    "roomOf": "{{room}}（部屋）",
+    "childSep": " ／ ",
+    "listOf": "{{label}}: {{items}}",
+    "ifThen": "もし「{{if}}」なら「{{then}}」",
+    "emptyChildren": "（なし）"
+  },
+  "leaf": {
+    "role": "役職・学年",
+    "roleGroup": "役職グループ",
+    "lab": "研究室",
+    "gender": "性別",
+    "tag": "タグ",
+    "members": "個人",
+    "rooms": "部屋",
+    "seats": "席",
+    "seatTag": "席タグ",
+    "depth": "奥行き"
+  },
+  "quickPicks": {
+    "label": "クイック指定",
+    "students": "学生全員",
+    "doctor": "D",
+    "workingDoctor": "社D",
+    "anyDoctor": "D または 社D",
+    "master": "修士",
+    "bachelor": "学部",
+    "staff": "スタッフ",
+    "postdoc": "PD",
+    "all": "全員"
+  },
+  "slot": {
+    "conditions": "条件",
+    "individuals": "個人",
+    "searchMembers": "名前で検索…",
+    "noMembers": "名簿にメンバーがいません",
+    "noMatch": "該当なし",
+    "matchCount": "{{n}} 人が該当",
+    "seatCount": "{{n}} 席が該当",
+    "zeroMatch": "該当する人がいません",
+    "zeroSeats": "該当する席がありません",
+    "preview": "該当者",
+    "previewMore": "ほか {{n}} 人",
+    "tabRooms": "部屋",
+    "tabPick": "席を選ぶ",
+    "tabTags": "タグ",
+    "tabDepth": "奥行き",
+    "tabBuild": "条件を組む",
+    "noRooms": "部屋がまだありません",
+    "noSeats": "席がまだありません",
+    "noTags": "タグ付きの席がありません",
+    "pickHint": "クリックで選択、ドラッグで範囲選択",
+    "clearSeats": "選択を解除",
+    "depthRoom": "部屋",
+    "depthFrom": "どこから",
+    "back": "奥から",
+    "front": "入口側から",
+    "depthAmount": "数",
+    "byCount": "席数",
+    "byRatio": "割合",
+    "allRoomsHint": "何も選ばないと「すべての部屋」",
+    "targetSeat": "席",
+    "targetRoom": "部屋",
+    "done": "完了",
+    "clear": "クリア",
+    "count": "人数",
+    "percent": "割合",
+    "complex": "複雑な条件です（深さ上限を超えています）",
+    "resetCondition": "条件をリセット",
+    "selectedSeats": "{{n}} 席を選択中",
+    "noLabs": "研究室がありません",
+    "noMemberTags": "タグがありません"
+  },
+  "builder": {
+    "addCondition": "条件を追加",
+    "addGroup": "グループを追加",
+    "group": "グループ化",
+    "ungroup": "グループ解除",
+    "not": "でない",
+    "and": "かつ",
+    "or": "または",
+    "remove": "条件を削除",
+    "attribute": "属性",
+    "empty": "条件なし（全員）",
+    "emptySeats": "条件なし（すべての席）",
+    "summary": "まとめ",
+    "pickValues": "値を選ぶ",
+    "zeroWarning": "この条件に当てはまるものがありません",
+    "groupLabel": "グループ"
+  },
+  "shell": {
+    "hard": "必須",
+    "soft": "できれば",
+    "strength": "強さ",
+    "weight": "重み {{n}}",
+    "weightLabel": "重み",
+    "enabled": "有効",
+    "disabled": "無効",
+    "drag": "ドラッグして並べ替え",
+    "menu": "ルールのメニュー",
+    "duplicate": "複製",
+    "note": "メモ",
+    "editNote": "メモを編集",
+    "notePlaceholder": "このルールについてのメモ",
+    "delete": "削除",
+    "copyJson": "JSON をコピー",
+    "copied": "コピーしました",
+    "violations": "違反 {{n}}",
+    "softOnly": "このブロックは「できれば」専用です",
+    "removeChild": "取り出して削除",
+    "moveOut": "外に出す",
+    "dropHere": "ここにルールをドロップ",
+    "dropCondition": "条件のルールをドロップ",
+    "dropThen": "成り立たせるルールをドロップ",
+    "childHint": "強さは親ブロックが持ちます",
+    "origin": {
+      "template": "テンプレート",
+      "contextMenu": "右クリックから",
+      "preset": "プリセット",
+      "user": "手動"
+    }
+  },
+  "palette": {
+    "title": "ブロック",
+    "blocks": "ブロック",
+    "templates": "テンプレート",
+    "search": "ブロックを検索…",
+    "noResults": "見つかりません",
+    "clickToAdd": "クリックで追加 / ドラッグで挿入",
+    "add": "追加"
+  },
+  "templates": {
+    "wdKeepSeat": {
+      "name": "社Dは昨年度の席に固定",
+      "description": "来室頻度の低い社会人ドクターの席を引き継ぎます"
+    },
+    "mixLabs3": {
+      "name": "各部屋に3研究室以上混ぜる",
+      "description": "部屋ごとに研究室が偏らないようにします"
+    },
+    "labCapHalf": {
+      "name": "1部屋の同じ研究室は半分以下",
+      "description": "1 つの研究室が部屋を占有しないようにします"
+    },
+    "noSameLabSameGradeAdjacent": {
+      "name": "同じ研究室の同学年は隣にしない",
+      "description": "学生同士で、同じ研究室かつ同じ学年なら隣にしません"
+    },
+    "buddySenior": {
+      "name": "新入生の同じ部屋に同じ研究室の先輩",
+      "description": "M1・B4 と同じ部屋に、同じ研究室の D・社D・教員を 1 人以上"
+    },
+    "mixAdjacentLab": {
+      "name": "隣は別の研究室",
+      "description": "隣り合う人の研究室が異なるようにします"
+    },
+    "facultyRoom": {
+      "name": "教員室は教員のみ",
+      "description": "追加後に教員室を選んでください"
+    },
+    "prevDifferentRoom": {
+      "name": "昨年度と別の部屋",
+      "description": "学生（社Dを除く）は昨年度と別の部屋にします"
+    }
+  },
+  "stack": {
+    "empty": "まだルールがありません",
+    "emptyHint": "左のパレットからブロックをクリック、またはドラッグして追加しましょう。",
+    "count": "{{n}} 件のルール",
+    "shown": "{{shown}} / {{total}} 件を表示",
+    "enableAll": "すべて有効",
+    "disableAll": "すべて無効",
+    "collapsed": "1 行表示",
+    "expanded": "詳細表示",
+    "noFilterResults": "条件に合うルールがありません",
+    "export": "JSON 書き出し",
+    "import": "JSON 取り込み",
+    "imported": "{{n}} 件のルールを取り込みました",
+    "importFailed": "ルールを読み込めませんでした"
+  },
+  "filters": {
+    "label": "絞り込み",
+    "category": "カテゴリ",
+    "strength": "強さ",
+    "enabled": "状態",
+    "all": "すべて",
+    "onlyEnabled": "有効のみ",
+    "onlyDisabled": "無効のみ",
+    "hasViolations": "違反あり",
+    "related": "関係する人・部屋",
+    "relatedMember": "人: {{name}}",
+    "relatedRoom": "部屋: {{name}}",
+    "clear": "絞り込みを解除",
+    "search": "人・部屋を検索…",
+    "members": "人",
+    "rooms": "部屋"
+  },
+  "issues": {
+    "unsetSlot": "未設定の項目があります",
+    "noPreviousPlan": "昨年度の席配置がまだありません（席配置画面で登録できます）",
+    "emptyLogic": "中にルールがありません",
+    "ifThenIncomplete": "「もし」と「なら」の両方にルールを入れてください",
+    "tooDeep": "論理ブロックの入れ子は 2 段までです",
+    "percentOver": "割合は 100% 以下にしてください",
+    "softOnly": "このブロックは「できれば」専用です",
+    "zeroPeople": "該当する人がいません",
+    "zeroSeats": "該当する席がありません",
+    "minOverOptions": "選択肢の数より多い種類数です"
+  },
+  "warnings": {
+    "title": "{{n}} 件の注意",
+    "dangling": "削除済みの部屋・席・人・研究室を参照しています",
+    "danglingCount": "参照切れ {{n}} 件",
+    "removeRefs": "参照を除去",
+    "deleteRules": "該当ルールを削除",
+    "contradictions": "矛盾の可能性 {{n}} 件",
+    "memberTwoPins": "{{name}} が複数の席・部屋に固定されています",
+    "seatTwoPins": "席 {{seat}} に複数の人が固定されています",
+    "sameAndDifferent": "同じ人に「昨年度と同じ」と「昨年度と別」が両方かかっています",
+    "pairConflict": "同じ組に「同じ部屋」と「別の部屋」が両方指定されています",
+    "onlyEmpty": "「のみ」の条件に当てはまる人がいません",
+    "onlyDisjoint": "同じ部屋・席に重ならない「のみ」が複数あります",
+    "danglingBadge": "参照切れ",
+    "jump": "移動",
+    "fixed": "参照を除去しました",
+    "deleted": "{{n}} 件のルールを削除しました"
+  },
+  "context": {
+    "added": "ルールを追加しました",
+    "open": "開く",
+    "undo": "元に戻す",
+    "exists": "同じルールがすでにあります",
+    "seatPinMember": "この席を {{name}} さんに固定",
+    "seatPinMemberMenu": "この席に人を固定",
+    "seatOnlyRole": "この席は {{role}} のみ",
+    "seatOnlyRoleMenu": "この席の役職を限定",
+    "seatEmpty": "この席を空席にする",
+    "roomOnly": "この部屋は {{who}} のみ",
+    "roomOnlyMenu": "この部屋の人を限定",
+    "roomPrefer": "この部屋に {{who}} を多めに",
+    "roomPreferMenu": "この部屋に多めに配置",
+    "memberPinSeat": "{{name}} さんをこの席に固定",
+    "memberPinSeatMenu": "席に固定",
+    "memberPinRoom": "{{name}} さんを {{room}} に固定",
+    "memberPinRoomMenu": "部屋に固定",
+    "memberSeparate": "{{name}} さんと {{other}} さんを別の部屋に",
+    "memberSeparateMenu": "別の部屋にする相手"
+  },
+  "feasibility": {
+    "ok": "必須ルールはすべて満たせます",
+    "infeasible": "必須ルールを満たせません",
+    "checking": "確認中…",
+    "unknown": "未確認"
+  },
+  "json": {
+    "copied": "ルールの JSON をコピーしました"
+  }
 }
