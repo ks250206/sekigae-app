@@ -8,7 +8,6 @@ import { ArrowDown, ArrowUp, ArrowUpDown, Pencil } from "lucide-react";
 import {
   memo,
   useCallback,
-  useEffect,
   useLayoutEffect,
   useRef,
   useState,
@@ -305,6 +304,8 @@ export function MembersTable(props: MembersTableProps) {
                 checked={allSelected ? true : someSelected ? "indeterminate" : false}
                 onCheckedChange={() => props.onToggleAll()}
                 aria-label={t("table.selectAll")}
+                // 一部選択はチェックではなく横線で示す
+                className="relative data-[state=indeterminate]:border-primary data-[state=indeterminate]:bg-primary data-[state=indeterminate]:[&_svg]:hidden data-[state=indeterminate]:after:absolute data-[state=indeterminate]:after:inset-x-[3px] data-[state=indeterminate]:after:top-1/2 data-[state=indeterminate]:after:h-0.5 data-[state=indeterminate]:after:-translate-y-1/2 data-[state=indeterminate]:after:rounded data-[state=indeterminate]:after:bg-primary-foreground"
                 data-testid="select-all"
               />
             </th>
@@ -534,7 +535,8 @@ function CellEditor({
   const [value, setValue] = useState(initial);
   const done = useRef(false);
   const ref = useRef<HTMLInputElement & HTMLSelectElement>(null);
-  useEffect(() => {
+  // 続けて打鍵された文字を取りこぼさないよう、描画直後に同期的にフォーカス
+  useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
     el.focus();

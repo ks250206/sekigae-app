@@ -38,6 +38,7 @@ export function BulkBar({
 }) {
   const { t } = useTranslation(["members", "common"]);
   const [tagText, setTagText] = useState("");
+  const [tagsOpen, setTagsOpen] = useState(false);
   const store = useProjectStore.getState;
   const set = new Set(ids);
   const selectedTags = [...new Set(members.filter((m) => set.has(m.id)).flatMap((m) => m.tags))];
@@ -55,6 +56,7 @@ export function BulkBar({
         if (set.has(m.id)) for (const tag of tags) if (!m.tags.includes(tag)) m.tags.push(tag);
     });
     setTagText("");
+    setTagsOpen(false);
     done();
   };
   const removeTag = (tag: string) => {
@@ -142,7 +144,7 @@ export function BulkBar({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <DropdownMenu>
+      <DropdownMenu open={tagsOpen} onOpenChange={setTagsOpen}>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" size="sm" data-testid="bulk-tags">
             <Tag />

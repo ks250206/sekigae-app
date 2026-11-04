@@ -78,7 +78,7 @@
     "editDescription": "Changes apply when you save (and can be undone).",
     "addedCount": "Added {{count}}. Keep going.",
     "addedToast": "Added {{name}}",
-    "namePlaceholder": "Taro Yamada",
+    "namePlaceholder": "e.g. Taro Yamada",
     "kanaPlaceholder": "Reading for sorting (optional)",
     "nameRequired": "Please enter a name",
     "duplicateName": "\"{{name}}\" already exists",

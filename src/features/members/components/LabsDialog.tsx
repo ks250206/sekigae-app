@@ -119,6 +119,16 @@ export function LabsDialog({
           <p className="text-muted-foreground py-6 text-center text-sm">{t("labs.empty")}</p>
         ) : (
           <ul className="divide-y rounded-md border" data-testid="labs-list">
+            <li
+              aria-hidden
+              className="text-muted-foreground bg-muted/40 hidden gap-2 px-3 py-1.5 text-xs sm:flex"
+            >
+              <span className="w-[4.25rem]" />
+              <span className="min-w-40 flex-1">{t("labs.name")}</span>
+              <span className="w-28">{t("labs.shortName")}</span>
+              <span className="w-36">{t("labs.members")}</span>
+              <span className="w-8" />
+            </li>
             {labs.map((lab, i) => (
               <LabRow
                 key={lab.id}
