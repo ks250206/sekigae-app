@@ -40,3 +40,24 @@ export function rulesReferencing(map: Map<ID, Set<ID>>, ids: readonly ID[]): Set
   for (const id of ids) for (const r of map.get(id) ?? []) out.add(r);
   return out;
 }
+
+/**
+ * ルール内の研究室参照を置き換える（統合時）。to=undefined なら参照を外す。
+ * immer draft のルール配列に対して破壊的に使う。
+ */
+export function replaceLabRefs(rules: Rule[], from: ID, to: ID | undefined): void {
+  const walk = (node: unknown) => {
+    if (Array.isArray(node)) {
+      for (const x of node) walk(x);
+      return;
+    }
+    if (!node || typeof node !== "object") return;
+    const o = node as Record<string, unknown>;
+    if (o.op === "lab" && Array.isArray(o.in) && o.in.includes(from)) {
+      const next = (o.in as ID[]).map((x) => (x === from ? to : x)).filter((x) => x !== undefined);
+      o.in = [...new Set(next)];
+    }
+    for (const v of Object.values(o)) if (v && typeof v === "object") walk(v);
+  };
+  for (const r of rules) walk(r.block);
+}
