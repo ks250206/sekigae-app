@@ -196,14 +196,27 @@ test("warns about references to deleted rooms", async ({ freshPage: page }) => {
 
 test("screenshot", async ({ freshPage: page }) => {
   test.skip(!process.env.RULES_SCREENSHOT, "manual");
-  await openRules(page);
+  const out = process.env.RULES_SCREENSHOT!;
   await page.setViewportSize({ width: 1400, height: 1000 });
+  await openRules(page);
   await page.getByTestId("palette-tab-templates").click();
-  for (const id of ["buddySenior", "noSameLabSameGradeAdjacent", "prevDifferentRoom", "labCapHalf"])
+  for (const id of ["buddySenior", "prevDifferentRoom"])
     await page.getByTestId(`palette-template-${id}`).click();
   await page.getByTestId("palette-tab-blocks").click();
   await page.getByTestId("palette-block-logic.ifThen").click();
-  await page.screenshot({ path: process.env.RULES_SCREENSHOT!, fullPage: true });
-  await page.getByTestId("slot-a").first().click();
-  await page.screenshot({ path: process.env.RULES_SCREENSHOT!.replace(".png", "-pop.png") });
+  await page.getByTestId("palette-block-seat.only").click();
+  await page.getByTestId("seat-tab-depth").click();
+  await page.getByTestId("slot-popover-seats").getByRole("button", { name: "Room 1" }).click();
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: out.replace(".png", "-depth.png") });
+  await page.keyboard.press("Escape");
+  await page.getByTestId("theme-menu").click();
+  await page.getByRole("menuitem", { name: "ダーク" }).click();
+  await page.getByTestId("slot-b").first().click();
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: out.replace(".png", "-dark.png") });
+  await page.keyboard.press("Escape");
+  await page.getByTestId("view-collapsed").click();
+  await page.waitForTimeout(300);
+  await page.screenshot({ path: out.replace(".png", "-collapsed.png") });
 });
