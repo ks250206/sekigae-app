@@ -56,7 +56,11 @@
     "saving": "Saving…",
     "failed": "Failed to save",
     "retry": "Retry",
-    "savedAt": "Saved at {{time}}"
+    "savedAt": "Saved at {{time}}",
+    "pending": "Saving…",
+    "memoryOnly": "Temporary only",
+    "paused": "Autosave paused",
+    "status": "Save status"
   },
   "error": {
     "title": "Something went wrong",
@@ -134,5 +138,91 @@
   },
   "empty": {
     "nothing": "Nothing here yet"
+  },
+  "project": {
+    "defaultName": "New project",
+    "defaultPlanName": "Plan A",
+    "copyName": "Copy of {{name}}",
+    "switcher": "Switch project",
+    "recent": "Recent projects",
+    "manage": "Manage projects…",
+    "new": "New project",
+    "dialogTitle": "Projects",
+    "dialogDescription": "Projects saved in this browser. Data stays on this device only.",
+    "name": "Name",
+    "updatedAt": "Updated",
+    "rooms": "Rooms",
+    "members": "Members",
+    "current": "Open",
+    "open": "Open",
+    "namePlaceholder": "Project name",
+    "deleteTitle": "Delete \"{{name}}\"?",
+    "deleteDescription": "This cannot be undone. Export it as JSON first if you need it.",
+    "created": "Project created",
+    "duplicated": "Created \"{{name}}\"",
+    "deleted": "Deleted \"{{name}}\"",
+    "renamed": "Renamed",
+    "dataSection": "JSON export / import",
+    "exportProject": "Export whole project",
+    "importProject": "Import JSON…",
+    "dropHint": "You can also drop a JSON file here",
+    "partialSection": "Partial export / import",
+    "partialHint": "Reuse just the room layout, members or rules in another project. Imports apply to the open project (undoable).",
+    "exportLayout": "Room layout",
+    "exportMembers": "Members (with labs)",
+    "exportRules": "Rules",
+    "usage": "Using {{used}} ({{percent}} of the estimated limit)",
+    "usageHint": "Browsers allow about 5 MB. If you run out, export to JSON and delete projects you no longer need.",
+    "kinds": {
+      "project": "Project",
+      "layout": "Room layout",
+      "members": "Members",
+      "rules": "Rules"
+    },
+    "import": {
+      "collisionTitle": "This project already exists",
+      "collisionDescription": "\"{{name}}\" is already in this browser. How do you want to import it?",
+      "asNew": "Import as a new project",
+      "overwrite": "Overwrite the existing one",
+      "modeTitle": "Import {{kind}}",
+      "modeDescription": "Imports into the open project \"{{name}}\".",
+      "replace": "Replace",
+      "replaceHint": "Remove the current {{kind}} and use the file's contents.",
+      "merge": "Add",
+      "mergeHint": "Add to the current {{kind}} (IDs are reassigned).",
+      "success": "Imported \"{{name}}\"",
+      "partialSuccess": "Imported {{kind}}",
+      "dangling": "Broken references: {{count}} (to rooms, seats, people or labs that don't exist)",
+      "errorTitle": "Import failed",
+      "errors": {
+        "notJson": "The file could not be read as JSON.",
+        "notSekigae": "This is not a file exported from Sekigae.",
+        "future": "This file was created by a newer version of the app (format v{{version}}; this app supports up to v{{supported}}). Please update the app.",
+        "invalid": "The file contents are invalid:",
+        "wrongKind": "This file contains \"{{kind}}\"."
+      }
+    }
+  },
+  "storage": {
+    "memoryOnly": "Browser storage is unavailable (e.g. private mode). Changes will be lost when you close the tab, so export to JSON.",
+    "quotaExceeded": "Could not save: storage is full",
+    "quotaDescription": "Export to JSON, then delete projects you no longer need.",
+    "saveFailed": "Failed to save",
+    "exportJson": "Export JSON",
+    "conflict": "This project was updated in another tab. Autosave is paused.",
+    "conflictDeleted": "This project was deleted in another tab. Autosave is paused.",
+    "reload": "Reload",
+    "overwrite": "Overwrite with this tab",
+    "recovery": {
+      "titleCorrupt": "Saved data could not be loaded",
+      "titleFuture": "Data from a newer version",
+      "descriptionCorrupt": "The saved data may be corrupted. The original data has been backed up so nothing is lost.",
+      "descriptionFuture": "This data was saved by a newer version of the app (format v{{version}}). Please update the app. The data has not been changed.",
+      "backupKey": "Backup: {{key}}",
+      "download": "Download original as JSON",
+      "discard": "Discard",
+      "startEmpty": "Start with an empty project",
+      "details": "Details"
+    }
   }
 }

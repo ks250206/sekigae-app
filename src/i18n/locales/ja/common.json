@@ -56,7 +56,11 @@
     "saving": "保存中…",
     "failed": "保存に失敗しました",
     "retry": "再試行",
-    "savedAt": "{{time}} に保存"
+    "savedAt": "{{time}} に保存",
+    "pending": "保存中…",
+    "memoryOnly": "一時保存のみ",
+    "paused": "自動保存を一時停止中",
+    "status": "保存状態"
   },
   "error": {
     "title": "問題が発生しました",
@@ -134,5 +138,91 @@
   },
   "empty": {
     "nothing": "まだ何もありません"
+  },
+  "project": {
+    "defaultName": "新しいプロジェクト",
+    "defaultPlanName": "案A",
+    "copyName": "{{name}} のコピー",
+    "switcher": "プロジェクトを切り替え",
+    "recent": "最近のプロジェクト",
+    "manage": "プロジェクトを管理…",
+    "new": "新規プロジェクト",
+    "dialogTitle": "プロジェクト",
+    "dialogDescription": "このブラウザに保存されているプロジェクトです。データは端末内にのみ保存されます。",
+    "name": "名前",
+    "updatedAt": "更新日時",
+    "rooms": "部屋",
+    "members": "人数",
+    "current": "開いています",
+    "open": "開く",
+    "namePlaceholder": "プロジェクト名",
+    "deleteTitle": "「{{name}}」を削除しますか？",
+    "deleteDescription": "この操作は元に戻せません。必要なら先に JSON で書き出してください。",
+    "created": "プロジェクトを作成しました",
+    "duplicated": "「{{name}}」を作成しました",
+    "deleted": "「{{name}}」を削除しました",
+    "renamed": "名前を変更しました",
+    "dataSection": "JSON で書き出し / 読み込み",
+    "exportProject": "プロジェクト全体を書き出す",
+    "importProject": "JSON を読み込む…",
+    "dropHint": "JSON ファイルをここにドロップしても読み込めます",
+    "partialSection": "部分的な書き出し / 読み込み",
+    "partialHint": "部屋レイアウト・名簿・ルールだけを別のプロジェクトへ流用できます。読み込みは開いているプロジェクトに適用されます（元に戻せます）。",
+    "exportLayout": "部屋レイアウト",
+    "exportMembers": "名簿（研究室を含む）",
+    "exportRules": "ルール",
+    "usage": "使用量 {{used}}（上限目安の {{percent}}）",
+    "usageHint": "ブラウザの保存容量は約 5MB です。容量が足りなくなったら JSON で書き出して不要なプロジェクトを削除してください。",
+    "kinds": {
+      "project": "プロジェクト",
+      "layout": "部屋レイアウト",
+      "members": "名簿",
+      "rules": "ルール"
+    },
+    "import": {
+      "collisionTitle": "同じプロジェクトが既にあります",
+      "collisionDescription": "「{{name}}」はこのブラウザに既にあります。どのように取り込みますか？",
+      "asNew": "新しいプロジェクトとして取り込む",
+      "overwrite": "既存のものを上書きする",
+      "modeTitle": "{{kind}}の取り込み方法",
+      "modeDescription": "開いているプロジェクト「{{name}}」に取り込みます。",
+      "replace": "置き換える",
+      "replaceHint": "今の{{kind}}を削除して、ファイルの内容に置き換えます。",
+      "merge": "追加する",
+      "mergeHint": "今の{{kind}}に追加します（ID は振り直されます）。",
+      "success": "「{{name}}」を読み込みました",
+      "partialSuccess": "{{kind}}を読み込みました",
+      "dangling": "参照切れ: {{count}} 件（存在しない部屋・席・人・研究室への参照）",
+      "errorTitle": "読み込みに失敗しました",
+      "errors": {
+        "notJson": "JSON ファイルとして読み込めませんでした。",
+        "notSekigae": "Sekigae で書き出したファイルではありません。",
+        "future": "新しいバージョンのアプリで作成されたファイルです（形式 v{{version}}、このアプリは v{{supported}} まで対応）。アプリを更新してください。",
+        "invalid": "ファイルの内容が不正です:",
+        "wrongKind": "このファイルは「{{kind}}」です。"
+      }
+    }
+  },
+  "storage": {
+    "memoryOnly": "このブラウザでは保存領域が使えません（プライベートモード等）。変更はタブを閉じると失われるため、JSON で書き出してください。",
+    "quotaExceeded": "保存容量が不足しているため保存できませんでした",
+    "quotaDescription": "JSON で書き出してから、不要なプロジェクトを削除してください。",
+    "saveFailed": "保存に失敗しました",
+    "exportJson": "JSON で書き出す",
+    "conflict": "他のタブでこのプロジェクトが更新されました。自動保存を一時停止しています。",
+    "conflictDeleted": "他のタブでこのプロジェクトが削除されました。自動保存を一時停止しています。",
+    "reload": "再読み込み",
+    "overwrite": "このタブの内容で上書き",
+    "recovery": {
+      "titleCorrupt": "保存データを読み込めませんでした",
+      "titleFuture": "新しいバージョンのデータです",
+      "descriptionCorrupt": "保存データが破損している可能性があります。元のデータは失われないよう退避してあります。",
+      "descriptionFuture": "このデータは新しいバージョンのアプリ（形式 v{{version}}）で保存されています。アプリを更新してください。データは変更していません。",
+      "backupKey": "退避先: {{key}}",
+      "download": "元データを JSON でダウンロード",
+      "discard": "破棄する",
+      "startEmpty": "空のプロジェクトで始める",
+      "details": "詳細"
+    }
   }
 }

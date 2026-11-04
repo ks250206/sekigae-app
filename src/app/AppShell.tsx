@@ -8,6 +8,7 @@ import { PwaPrompt } from "./PwaPrompt";
 import {
   GlobalOverlaysSlot,
   HelpMenuSlot,
+  PersistenceSlot,
   ProjectSwitcherSlot,
   SaveStatusSlot,
   UndoRedoSlot,
@@ -42,6 +43,7 @@ export function AppShell() {
         <StepNav variant="bottom" />
       </div>
       <GlobalOverlaysSlot />
+      <PersistenceSlot />
       <ConfirmHost />
       <PwaPrompt />
       <Toaster richColors closeButton position="bottom-right" />
